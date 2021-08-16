@@ -8,6 +8,7 @@ package main
 import (
 	"fmt"
 	"github.com/liyiligang/klee-client-go/klee"
+	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
 	"time"
 )
 
@@ -30,7 +31,17 @@ func main() {
 	}
 
 	//node func
-	err = manageClient.RegisterNodeFunc("testFunc", testFunc, klee.NodeFuncLevelVisitor)
+	//err = manageClient.RegisterNodeFunc("testFunc", testFunc, klee.NodeFuncLevelVisitor)
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	err = manageClient.RegisterNodeFunc("方法测试2", testFunc, klee.NodeFuncLevelSuperManager)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeFunc("方法测试8", testFunc, klee.NodeFuncLevelManager)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -48,10 +59,10 @@ func main() {
 	}
 
 	//node notify
-	err = manageClient.SendNodeNotify("testNotify", klee.NodeNotifyLevelWarn)
-	if err != nil {
-		fmt.Println(err)
-	}
+	//err = manageClient.SendNodeNotify("testNotify", klee.NodeNotifyLevelWarn)
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 
 	select {}
 }
@@ -68,7 +79,7 @@ func initClient() (*klee.ManageClient, error) {
 		ConnectTimeOut: time.Second * 5,
 		RequestTimeOut: time.Second * 5,
 		KeepaliveTime: time.Second * 1,
-		ErrorCall: errorCall,
+		NotifyCall: notifyCall,
 	})
 	if err != nil {
 		return nil, err
@@ -76,8 +87,8 @@ func initClient() (*klee.ManageClient, error) {
 	return c, nil
 }
 
-func errorCall(text string, err error) {
-	fmt.Println("rpc error: ", text, err)
+func notifyCall(nodeNotify protoManage.NodeNotify) {
+	fmt.Println("receive node notify: ", nodeNotify.Message)
 }
 
 var testFuncVal = 2

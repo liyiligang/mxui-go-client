@@ -24,3 +24,15 @@ func (client *ManageClient) SendNodeNotify(msg string, nodeNotifyLevel NodeNotif
 		Message: msg, State: protoManage.State(nodeNotifyLevel)}
 	return client.sendPB(protoManage.Order_NodeNotifyAdd, nodeNotify)
 }
+
+func (client *ManageClient) reqNodeNotify(message []byte) error {
+	req := protoManage.NodeNotify{}
+	err := req.Unmarshal(message)
+	if err != nil {
+		return err
+	}
+	if client.config.NotifyCall != nil {
+		client.config.NotifyCall(req)
+	}
+	return nil
+}

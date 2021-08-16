@@ -6,9 +6,10 @@
 package klee
 
 import (
+	"errors"
 	"github.com/liyiligang/base/commonConst"
-	"github.com/liyiligang/base/component/Jlog"
 	"github.com/liyiligang/base/component/Jrpc"
+	"github.com/liyiligang/base/component/Jtool"
 	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
 )
 
@@ -52,23 +53,44 @@ func (client *ManageClient) RpcStreamClose(stream *Jrpc.RpcStream) {
 }
 
 func (client *ManageClient) RpcStreamReceiver(stream *Jrpc.RpcStream, recv interface{}) {
-	res := *recv.(*protoManage.Message)
 	var err error
+	defer func(){
+		if err != nil && client.config.NotifyCall != nil {
+			client.config.NotifyCall(protoManage.NodeNotify{
+				SenderType:           protoManage.NotifySenderType_NotifySenderTypeNode,
+				Message:              err.Error(),
+				State:                protoManage.State_StateError,
+			})
+		}
+	}()
+	res, ok := recv.(*protoManage.Message)
+	if !ok {
+		err = errors.New("rpc stream消息断言错误")
+		return
+	}
 	switch res.Order {
 	case protoManage.Order_NodeFuncCallReq:
 		err = client.reqNodeFuncCall(res.Message)
 		break
+	case protoManage.Order_NodeNotifyError:
+		err = client.reqNodeNotify(res.Message)
+		break
 	default:
-		Jlog.Warn("管控中心指令错误", "指令", res.Order, "消息", &res.Message)
-	}
-	if err != nil {
-		Jlog.Warn(err.Error())
+		err = errors.New("rpc stream指令错误：" +  Jtool.Int64ToString(int64(res.Order)))
 	}
 }
 
 func (client *ManageClient) RpcStreamError(text string, err error) {
-	if client.config.ErrorCall != nil {
-		client.config.ErrorCall(text, err)
+	msg := text
+	if err != nil {
+		msg += err.Error()
+	}
+	if client.config.NotifyCall != nil {
+		client.config.NotifyCall(protoManage.NodeNotify{
+			SenderType:           protoManage.NotifySenderType_NotifySenderTypeNode,
+			Message:              msg,
+			State:                protoManage.State_StateError,
+		})
 	}
 }
 

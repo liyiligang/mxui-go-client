@@ -41,7 +41,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc("方法测试8", testFunc, klee.NodeFuncLevelManager)
+	err = manageClient.RegisterNodeFunc("方法测试9", testFunc, klee.NodeFuncLevelVisitor)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -19,22 +19,35 @@ const (
 )
 
 func (client *ManageClient) reqNodeFuncCall(message []byte) error {
+	var err error
 	req := protoManage.ReqNodeFuncCall{}
-	err := req.Unmarshal(message)
+	err = req.Unmarshal(message)
 	if err != nil {
 		return err
 	}
+	defer func(){
+		if err != nil  {
+			ans := protoManage.AnsNodeFuncCall{Error: err.Error(), NodeFuncCall: protoManage.NodeFuncCall{
+				Base: req.NodeFuncCall.Base, State: protoManage.State_StateUnknow,
+				ManagerID: req.NodeFuncCall.ManagerID, FuncID: req.NodeFuncCall.FuncID,
+			}}
+			client.sendPB(protoManage.Order_NodeFuncCallAns, &ans)
+		}
+	}()
 	v, ok := client.data.nodeFuncMap.Load(req.NodeFuncCall.FuncID)
 	if !ok {
-		return errors.New("func callback is non-existent")
+		err = errors.New("func callback is non-existent")
+		return err
 	}
 	callFunc, ok := v.(CallFuncDef)
 	if !ok {
-		return errors.New("callFunc data format is error, its type should be CallFuncDef")
+		err = errors.New("callFunc data format is error, its type should be CallFuncDef")
+		return err
 	}
 	res, state := callFunc(req.NodeFuncCall.Parameter)
 	ans := protoManage.AnsNodeFuncCall{NodeFuncCall: protoManage.NodeFuncCall{
 		Base: req.NodeFuncCall.Base, ReturnVal: res, State: protoManage.State(state),
+		ManagerID: req.NodeFuncCall.ManagerID, FuncID: req.NodeFuncCall.FuncID,
 	}}
 	return client.sendPB(protoManage.Order_NodeFuncCallAns, &ans)
 }

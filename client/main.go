@@ -36,18 +36,18 @@ func main() {
 	//	fmt.Println(err)
 	//}
 	//
-	err = manageClient.RegisterNodeFunc("方法测试2", testFunc, klee.NodeFuncLevelSuperManager)
+	err = manageClient.RegisterNodeFunc("方法测试5", testFunc, klee.NodeFuncLevelSuperManager)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc("方法测试9", testFunc, klee.NodeFuncLevelVisitor)
+	err = manageClient.RegisterNodeFunc("方法测试6", testFunc, klee.NodeFuncLevelVisitor)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	//node report
-	err = manageClient.RegisterNodeReport("testReport", testReport, 3*time.Second, klee.NodeReportLevelVisitor)
+	err = manageClient.RegisterNodeReport("报告测试1", testReport, 3*time.Second, klee.NodeReportLevelVisitor)
 	if err != nil {
 		fmt.Println(err)
 	}

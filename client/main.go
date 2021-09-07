@@ -14,7 +14,18 @@ import (
 
 var manageClient *klee.ManageClient
 
+//type TestUser struct {
+//	ID            int                    `json:"id"`
+//	Name          string                 `json:"name" jsonschema:"title=用户名,description=用户名的名字,example=joe,example=lucy,default=alex"`
+//}
+
 func main() {
+
+	//aa := jsonschema.Reflect(&TestUser{})
+	//b, _ := aa.MarshalJSON()
+	//fmt.Println(string(b))
+
+
 	//example
 	//link
 	var err error

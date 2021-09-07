@@ -28,7 +28,7 @@ func (client *ManageClient) reqNodeFuncCall(message []byte) error {
 	defer func(){
 		if err != nil  {
 			ans := protoManage.AnsNodeFuncCall{Error: err.Error(), NodeFuncCall: protoManage.NodeFuncCall{
-				Base: req.NodeFuncCall.Base, State: protoManage.State_StateUnknow,
+				Base: req.NodeFuncCall.Base, State: protoManage.State_StateError,
 				ManagerID: req.NodeFuncCall.ManagerID, FuncID: req.NodeFuncCall.FuncID,
 			}}
 			client.sendPB(protoManage.Order_NodeFuncCallAns, &ans)
@@ -46,8 +46,9 @@ func (client *ManageClient) reqNodeFuncCall(message []byte) error {
 	}
 	res, state := callFunc(req.NodeFuncCall.Parameter)
 	ans := protoManage.AnsNodeFuncCall{NodeFuncCall: protoManage.NodeFuncCall{
-		Base: req.NodeFuncCall.Base, ReturnVal: res, State: protoManage.State(state),
-		ManagerID: req.NodeFuncCall.ManagerID, FuncID: req.NodeFuncCall.FuncID,
+		Base: req.NodeFuncCall.Base, Parameter: req.NodeFuncCall.Parameter,
+		ReturnVal: res, State: protoManage.State(state), ManagerID: req.NodeFuncCall.ManagerID,
+		FuncID: req.NodeFuncCall.FuncID,
 	}}
 	return client.sendPB(protoManage.Order_NodeFuncCallAns, &ans)
 }

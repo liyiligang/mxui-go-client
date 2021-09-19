@@ -14,17 +14,22 @@ import (
 
 var manageClient *klee.ManageClient
 
-//type TestUser struct {
-//	ID            int                    `json:"id"`
-//	Name          string                 `json:"name" jsonschema:"title=用户名,description=用户名的名字,example=joe,example=lucy,default=alex"`
-//}
+type TestNode struct {
+	Node 		int 		`jsonschema:"title=节点ID,default=1"`
+	NodeName 	string		`jsonschema:"title=节点名,default=" jsonschema_extras:"ui:options='type':'textarea'.'rows':6"`
+}
+
+type TestUser struct {
+	ID       int       		`jsonschema:"title=ID,default=1"`
+	Name     string    		`json:"name,omitempty" jsonschema:"title=姓名,default="`
+	Sex		 bool	   		`jsonschema:"title=性别,default=false" jsonschema_extras:"ui:options='activeText':'男'.'inactiveText':'女'"`
+	Node	 TestNode
+	Age		 []int     		`jsonschema:"title=年龄"`
+	Date	 time.Time		`jsonschema:"title=日期"`
+	Color    string         `json:"fav_color,omitempty" jsonschema:"title=颜色,enum=red,enum=green,enum=blue,default=green" jsonschema_extras:"enumNames=红色,enumNames=绿色,enumNames=蓝色"`
+}
 
 func main() {
-
-	//aa := jsonschema.Reflect(&TestUser{})
-	//b, _ := aa.MarshalJSON()
-	//fmt.Println(string(b))
-
 
 	//example
 	//link
@@ -42,32 +47,26 @@ func main() {
 	}
 
 	//node func
-	//err = manageClient.RegisterNodeFunc("testFunc", testFunc, klee.NodeFuncLevelVisitor)
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-	//
-	err = manageClient.RegisterNodeFunc("方法测试5", testFunc, klee.NodeFuncLevelSuperManager)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc("方法测试6", testFunc, klee.NodeFuncLevelVisitor)
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "方法测试8",
+		CallFunc: testRectFunc,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	//node report
-	err = manageClient.RegisterNodeReport("报告测试1", testReport, 3*time.Second, klee.NodeReportLevelVisitor)
-	if err != nil {
-		fmt.Println(err)
-	}
+	//err = manageClient.RegisterNodeReport("报告测试1", testReport, 3*time.Second, klee.NodeReportLevelVisitor)
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 
 	//node report manual update
-	err = manageClient.UpdateReportVal("testReport", 1, klee.NodeReportValLevelNormal)
-	if err != nil {
-		fmt.Println(err)
-	}
+	//err = manageClient.UpdateReportVal("testReport", 1, klee.NodeReportValLevelNormal)
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 
 	//node notify
 	//err = manageClient.SendNodeNotify("testNotify", klee.NodeNotifyLevelWarn)
@@ -113,9 +112,14 @@ func testFunc(str string) (string, klee.NodeFuncCallLevel) {
 	return "567890", klee.NodeFuncCallLevelLevelSuccess
 }
 
+func testRectFunc(str *TestUser) *klee.NodeFuncResponse {
+	return &klee.NodeFuncResponse{Value: 123, Level: klee.NodeFuncCallLevelLevelSuccess}
+}
 
 var testVal = 0.0
 func testReport() (float64, klee.NodeReportValLevel) {
 	testVal += 1
 	return testVal, klee.NodeReportValLevelNormal
 }
+
+

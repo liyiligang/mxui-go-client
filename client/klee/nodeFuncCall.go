@@ -12,13 +12,59 @@ import (
 	"reflect"
 )
 
-type NodeFuncCallLevel int32
+type NodeFuncCallState int32
 const (
-	NodeFuncCallLevelTimeout      NodeFuncCallLevel =   1
-	NodeFuncCallLevelLevelSuccess NodeFuncCallLevel =   2
-	NodeFuncCallLevelLevelWarn    NodeFuncCallLevel =   3
-	NodeFuncCallLevelLevelError   NodeFuncCallLevel =   4
+	NodeFuncCallStateTimeout      NodeFuncCallState =   1
+	NodeFuncCallStateSuccess 	  NodeFuncCallState =   2
+	NodeFuncCallStateWarn    	  NodeFuncCallState =   3
+	NodeFuncCallStateError   	  NodeFuncCallState =   4
 )
+
+type NodeFuncReturnLink struct {
+	Name        string
+	Link 		string
+	AutoOpen	bool
+}
+
+type NodeFuncReturnMedia struct {
+	URL         string
+	Type 	    string
+	Live		bool
+	Loop		bool
+	AutoPlay	bool
+}
+
+type NodeFuncReturnFile struct {
+	Name        	string
+	Content 		[]byte
+	AutoDownload	bool
+}
+
+type NodeFuncReturnTableCol struct {
+	Name        	string
+	Width			uint32
+	Type            string
+	Fixed			string
+	Align			string
+	Resizable		bool
+	MergeSameCol	bool
+}
+
+type NodeFuncReturnTableRow struct {
+	Data			[]interface{}
+	State			protoManage.State
+	MergeSameRow	bool
+}
+
+type NodeFuncReturnTable struct {
+	Stripe			bool
+	Border			bool
+	ShowSummary     bool
+	ShowIndex		bool
+	SumText			string
+	Col        		[]NodeFuncReturnTableCol
+	Row				[]NodeFuncReturnTableRow
+}
 
 func (client *ManageClient) reqNodeFuncCall(message []byte) error {
 	var err error
@@ -51,8 +97,8 @@ func (client *ManageClient) reqNodeFuncCall(message []byte) error {
 	}
 	ans := protoManage.AnsNodeFuncCall{NodeFuncCall: protoManage.NodeFuncCall{
 		Base: req.NodeFuncCall.Base, Parameter: req.NodeFuncCall.Parameter,
-		ReturnVal: string(byte), State: protoManage.State(res.Level), ManagerID: req.NodeFuncCall.ManagerID,
-		FuncID: req.NodeFuncCall.FuncID,
+		ReturnVal: string(byte), ReturnType: res.Type, State: protoManage.State(res.State),
+		ManagerID: req.NodeFuncCall.ManagerID, FuncID: req.NodeFuncCall.FuncID,
 	}}
 	return client.sendPB(protoManage.Order_NodeFuncCallAns, &ans)
 }

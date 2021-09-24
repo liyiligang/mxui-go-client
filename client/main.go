@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"github.com/liyiligang/klee-client-go/klee"
 	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
+	"io/ioutil"
+	"os"
 	"time"
 )
 
@@ -25,7 +27,7 @@ type TestUser struct {
 	Sex		 bool	   		`jsonschema:"title=性别,default=false" jsonschema_extras:"ui:options='activeText':'男'.'inactiveText':'女'"`
 	Node	 TestNode
 	Age		 []int     		`jsonschema:"title=年龄"`
-	Date	 time.Time		`jsonschema:"title=日期"`
+	Date	 time.Time		`jsonschema:"title=日期,default=2020-01-16T02:11:11.000Z"`
 	Color    string         `json:"fav_color,omitempty" jsonschema:"title=颜色,enum=red,enum=green,enum=blue,default=green" jsonschema_extras:"enumNames=红色,enumNames=绿色,enumNames=蓝色"`
 }
 
@@ -48,8 +50,53 @@ func main() {
 
 	//node func
 	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
-		Name:     "方法测试8",
-		CallFunc: testRectFunc,
+		Name:     "文本测试",
+		CallFunc: testRectFunc1,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "Json测试",
+		CallFunc: testRectFunc2,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "链接测试",
+		CallFunc: testRectFunc3,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "媒体测试",
+		CallFunc: testRectFunc4,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "文件测试",
+		CallFunc: testRectFunc5,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "表格测试",
+		CallFunc: testRectFunc6,
 		Level:    klee.NodeFuncLevelSuperManager,
 	})
 	if err != nil {
@@ -101,19 +148,143 @@ func notifyCall(nodeNotify protoManage.NodeNotify) {
 	fmt.Println("receive node notify: ", nodeNotify.Message)
 }
 
-var testFuncVal = 2
-func testFunc(str string) (string, klee.NodeFuncCallLevel) {
-	testFuncVal++
-	if testFuncVal >= 5 {
-		testFuncVal = 2
-	}
-	manageClient.UpdateNode(klee.NodeState(testFuncVal))
-	manageClient.UpdateNodeLink(15, klee.NodeLinkState(testFuncVal))
-	return "567890", klee.NodeFuncCallLevelLevelSuccess
+func testRectFunc1(str *TestUser) *klee.NodeFuncResponse {
+	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Text,
+		Value: "元气森林啊哈哈哈哈哈哈哈哈哈", State: klee.NodeFuncCallStateTimeout}
 }
 
-func testRectFunc(str *TestUser) *klee.NodeFuncResponse {
-	return &klee.NodeFuncResponse{Value: 123, Level: klee.NodeFuncCallLevelLevelSuccess}
+func testRectFunc2(str *TestUser) *klee.NodeFuncResponse {
+	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Json,
+		Value: str, State: klee.NodeFuncCallStateSuccess}
+}
+
+func testRectFunc3(str *TestUser) *klee.NodeFuncResponse {
+	aa := klee.NodeFuncReturnLink{Link: "https://www.baidu.com", Name: "百度", AutoOpen: str.Sex}
+	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Link,
+		Value: aa, State: klee.NodeFuncCallStateWarn}
+}
+
+func testRectFunc4(str *klee.NodeFuncReturnMedia) *klee.NodeFuncResponse {
+	//https://10.0.2.54:9080/cloudAppFile/temp/2.flv
+	//http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4
+	//http://220.161.87.62:8800/hls/1/index.m3u8
+	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Media,
+		Value: str, State: klee.NodeFuncCallStateError}
+}
+
+func testRectFunc5(str *TestUser) *klee.NodeFuncResponse {
+
+	f, _ := os.OpenFile("C:\\Users\\49341\\Desktop\\2.txt", os.O_RDONLY,0600)
+	defer f.Close()
+	data, _ := ioutil.ReadAll(f)
+
+	aa := klee.NodeFuncReturnFile{Name: f.Name(), Content: data, AutoDownload: str.Sex}
+	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_File,
+		Value: aa, State: klee.NodeFuncCallStateError}
+}
+
+func testRectFunc6(str *TestUser) *klee.NodeFuncResponse {
+	aa := klee.NodeFuncReturnTable{
+		Stripe: str.Sex,
+		Border: str.Sex,
+		ShowIndex: str.Sex,
+		ShowSummary:false,
+		SumText:"",
+		Col: []klee.NodeFuncReturnTableCol{
+			klee.NodeFuncReturnTableCol{
+				Name: "编号",
+				Width: 100,
+				Type: "index",
+			},
+			klee.NodeFuncReturnTableCol{
+				Name: "姓名",
+				Width: 200,
+				Resizable:str.Sex,
+				MergeSameCol:str.Sex,
+			},
+			klee.NodeFuncReturnTableCol{
+				Name: "年龄",
+				Width: 100,
+				Align: str.Name,
+			},
+			klee.NodeFuncReturnTableCol{
+				Name: "性别",
+				Width: 100,
+			},
+		},
+		Row: []klee.NodeFuncReturnTableRow{
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"可莉", 10, "女"},
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"七七", 1000, "女"},
+				State: protoManage.State_StateUnknow,
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"莫娜", 201, "女"},
+				State: protoManage.State_StateNormal,
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"莫娜", 202, "女"},
+				State: protoManage.State_StateNormal,
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"莫娜", 203, "女"},
+				State: protoManage.State_StateNormal,
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"莫娜", 203, "女"},
+				State: protoManage.State_StateNormal,
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"莫娜", 205, "女"},
+				State: protoManage.State_StateNormal,
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"原石", "原石", "原石"},
+				State: protoManage.State_StateNormal,
+				MergeSameRow:true,
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"香菱", 15, "女"},
+				State: protoManage.State_StateWarn,
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"行秋", 300, "男"},
+				State: protoManage.State_StateError,
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"行秋", 300, "男"},
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"行秋", 300, "男"},
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"可莉", 10, "女"},
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"七七", 1000, "女"},
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"莫娜", 200, "女"},
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"香菱", 15, "女"},
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"香菱", 15, "女"},
+				State: protoManage.State_StateError,
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"香菱", 15, "女"},
+			},
+			klee.NodeFuncReturnTableRow{
+				Data: []interface{}{"行秋", 300, "男"},
+			},
+		},
+	}
+	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Table,
+		Value: aa, State: klee.NodeFuncCallStateWarn}
 }
 
 var testVal = 0.0

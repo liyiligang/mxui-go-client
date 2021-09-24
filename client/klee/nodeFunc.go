@@ -21,8 +21,6 @@ const (
 	NodeFuncLevelSuperManager NodeFuncLevel =   4
 )
 
-type CallFuncDef func(string) (string, NodeFuncCallLevel)
-
 type NodeFuncRegister struct {
 	Name 			string
 	CallFunc 		interface{}
@@ -31,7 +29,8 @@ type NodeFuncRegister struct {
 
 type NodeFuncResponse struct {
 	Value 		interface{}
-	Level 		NodeFuncCallLevel
+	Type 		protoManage.NodeFuncReturnType
+	State 		NodeFuncCallState
 }
 
 func (client *ManageClient) RegisterNodeFunc(nodeFunc NodeFuncRegister) error {

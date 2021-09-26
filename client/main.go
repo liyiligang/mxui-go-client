@@ -6,10 +6,14 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/go-echarts/go-echarts/v2/charts"
+	"github.com/go-echarts/go-echarts/v2/opts"
 	"github.com/liyiligang/klee-client-go/klee"
 	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"time"
 )
@@ -32,6 +36,7 @@ type TestUser struct {
 }
 
 func main() {
+
 
 	//example
 	//link
@@ -103,19 +108,28 @@ func main() {
 		fmt.Println(err)
 	}
 
-	//node report
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "图表测试",
+		CallFunc: testRectFunc7,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	////node report
 	//err = manageClient.RegisterNodeReport("报告测试1", testReport, 3*time.Second, klee.NodeReportLevelVisitor)
 	//if err != nil {
 	//	fmt.Println(err)
 	//}
-
-	//node report manual update
+	//
+	////node report manual update
 	//err = manageClient.UpdateReportVal("testReport", 1, klee.NodeReportValLevelNormal)
 	//if err != nil {
 	//	fmt.Println(err)
 	//}
-
-	//node notify
+	//
+	////node notify
 	//err = manageClient.SendNodeNotify("testNotify", klee.NodeNotifyLevelWarn)
 	//if err != nil {
 	//	fmt.Println(err)
@@ -149,8 +163,11 @@ func notifyCall(nodeNotify protoManage.NodeNotify) {
 }
 
 func testRectFunc1(str *TestUser) *klee.NodeFuncResponse {
+
+    aa := klee.NodeFuncReturnText{Content: str.ID}
+
 	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Text,
-		Value: "元气森林啊哈哈哈哈哈哈哈哈哈", State: klee.NodeFuncCallStateTimeout}
+		Value: aa, State: klee.NodeFuncCallStateTimeout}
 }
 
 func testRectFunc2(str *TestUser) *klee.NodeFuncResponse {
@@ -174,7 +191,7 @@ func testRectFunc4(str *klee.NodeFuncReturnMedia) *klee.NodeFuncResponse {
 
 func testRectFunc5(str *TestUser) *klee.NodeFuncResponse {
 
-	f, _ := os.OpenFile("C:\\Users\\49341\\Desktop\\2.txt", os.O_RDONLY,0600)
+	f, _ := os.OpenFile("C:\\Users\\49341\\Desktop\\kk.html", os.O_RDONLY,0600)
 	defer f.Close()
 	data, _ := ioutil.ReadAll(f)
 
@@ -287,10 +304,43 @@ func testRectFunc6(str *TestUser) *klee.NodeFuncResponse {
 		Value: aa, State: klee.NodeFuncCallStateWarn}
 }
 
+func testRectFunc7(str *TestUser) *klee.NodeFuncResponse {
+	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Charts,
+		Value: getEcharts(), State: klee.NodeFuncCallStateSuccess}
+}
+
 var testVal = 0.0
 func testReport() (float64, klee.NodeReportValLevel) {
 	testVal += 1
 	return testVal, klee.NodeReportValLevelNormal
+}
+
+func generateBarItems() []opts.BarData {
+	items := make([]opts.BarData, 0)
+	for i := 0; i < 7; i++ {
+		items = append(items, opts.BarData{Value: rand.Intn(300)})
+	}
+	return items
+}
+
+func getEcharts() klee.NodeFuncReturnCharts {
+	// create a new bar instance
+	bar := charts.NewBar()
+	// set some global options like Title/Legend/ToolTip or anything else
+	bar.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
+		Title:    "测试",
+		Subtitle: "111",
+	}))
+
+	// Put data into instance
+	bar.SetXAxis([]string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}).
+		AddSeries("Category A", generateBarItems()).
+		AddSeries("Category B", generateBarItems())
+	// Where the magic happens
+	buf:= &bytes.Buffer{}
+	bar.Render(buf)
+	dd := klee.NodeFuncReturnCharts{Content: bar.JSON()}
+	return dd
 }
 
 

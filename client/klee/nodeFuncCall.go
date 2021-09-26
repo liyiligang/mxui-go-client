@@ -20,6 +20,10 @@ const (
 	NodeFuncCallStateError   	  NodeFuncCallState =   4
 )
 
+type NodeFuncReturnText struct {
+	Content 		interface{}
+}
+
 type NodeFuncReturnLink struct {
 	Name        string
 	Link 		string
@@ -32,6 +36,10 @@ type NodeFuncReturnMedia struct {
 	Live		bool
 	Loop		bool
 	AutoPlay	bool
+}
+
+type NodeFuncReturnCharts struct {
+	Content 		map[string]interface{}
 }
 
 type NodeFuncReturnFile struct {
@@ -92,6 +100,9 @@ func (client *ManageClient) reqNodeFuncCall(message []byte) error {
 		return err
 	}
 	byte , err := json.Marshal(res.Value)
+	if err != nil {
+		return err
+	}
 	if err != nil {
 		return err
 	}

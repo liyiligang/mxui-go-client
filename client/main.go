@@ -7,14 +7,14 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
 	"github.com/liyiligang/klee-client-go/klee"
+	"github.com/liyiligang/klee-client-go/klee/typedef"
 	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
-	"io/ioutil"
 	"math/rand"
-	"os"
 	"time"
 )
 
@@ -36,7 +36,6 @@ type TestUser struct {
 }
 
 func main() {
-
 
 	//example
 	//link
@@ -117,6 +116,42 @@ func main() {
 		fmt.Println(err)
 	}
 
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "多返回值测试",
+		CallFunc: testRectFunc8,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "错误测试",
+		CallFunc: testRectFunc9,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "无值",
+		CallFunc: testRectFunc10,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "图片测试",
+		CallFunc: testRectFunc11,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	////node report
 	//err = manageClient.RegisterNodeReport("报告测试1", testReport, 3*time.Second, klee.NodeReportLevelVisitor)
 	//if err != nil {
@@ -162,151 +197,176 @@ func notifyCall(nodeNotify protoManage.NodeNotify) {
 	fmt.Println("receive node notify: ", nodeNotify.Message)
 }
 
-func testRectFunc1(str *TestUser) *klee.NodeFuncResponse {
-
-    aa := klee.NodeFuncReturnText{Content: str.ID}
-
-	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Text,
-		Value: aa, State: klee.NodeFuncCallStateTimeout}
+func testRectFunc1(str *TestUser) string {
+	return "aaaaaa"
 }
 
-func testRectFunc2(str *TestUser) *klee.NodeFuncResponse {
-	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Json,
-		Value: str, State: klee.NodeFuncCallStateSuccess}
+func testRectFunc2(str *TestUser) (*TestUser, error) {
+	str.Name = "<>"
+	return str, errors.New("哈哈哈")
 }
 
-func testRectFunc3(str *TestUser) *klee.NodeFuncResponse {
-	aa := klee.NodeFuncReturnLink{Link: "https://www.baidu.com", Name: "百度", AutoOpen: str.Sex}
-	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Link,
-		Value: aa, State: klee.NodeFuncCallStateWarn}
+func testRectFunc3(str *typedef.NodeFuncReturnLink) *typedef.NodeFuncReturnLink {
+	str.Name = "百度"
+	str.Link="https://tool.lu/"
+	return str
 }
 
-func testRectFunc4(str *klee.NodeFuncReturnMedia) *klee.NodeFuncResponse {
+func testRectFunc4(str *typedef.NodeFuncReturnMedia) *typedef.NodeFuncReturnMedia {
 	//https://10.0.2.54:9080/cloudAppFile/temp/2.flv
 	//http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4
 	//http://220.161.87.62:8800/hls/1/index.m3u8
-	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Media,
-		Value: str, State: klee.NodeFuncCallStateError}
+	return str
 }
 
-func testRectFunc5(str *TestUser) *klee.NodeFuncResponse {
+func testRectFunc5(str *TestUser) typedef.NodeFuncReturnFile {
 
-	f, _ := os.OpenFile("C:\\Users\\49341\\Desktop\\kk.html", os.O_RDONLY,0600)
-	defer f.Close()
-	data, _ := ioutil.ReadAll(f)
+	//f, _ := os.OpenFile("C:\\Users\\49341\\Desktop\\kk.html", os.O_RDONLY,0600)
+	//defer f.Close()
+	//data, _ := ioutil.ReadAll(f)
 
-	aa := klee.NodeFuncReturnFile{Name: f.Name(), Content: data, AutoDownload: str.Sex}
-	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_File,
-		Value: aa, State: klee.NodeFuncCallStateError}
+	aa := typedef.NodeFuncReturnFile{Name: "文件测试", Data: []byte("测试文本"), AutoSave: str.Sex}
+	return aa
 }
 
-func testRectFunc6(str *TestUser) *klee.NodeFuncResponse {
-	aa := klee.NodeFuncReturnTable{
+func testRectFunc6(str *TestUser) (*typedef.NodeFuncReturnTable, error) {
+	aa := typedef.NodeFuncReturnTable{
 		Stripe: str.Sex,
 		Border: str.Sex,
 		ShowIndex: str.Sex,
 		ShowSummary:false,
 		SumText:"",
-		Col: []klee.NodeFuncReturnTableCol{
-			klee.NodeFuncReturnTableCol{
+		Col: []typedef.NodeFuncReturnTableCol{
+			typedef.NodeFuncReturnTableCol{
 				Name: "编号",
 				Width: 100,
 				Type: "index",
 			},
-			klee.NodeFuncReturnTableCol{
+			typedef.NodeFuncReturnTableCol{
 				Name: "姓名",
 				Width: 200,
 				Resizable:str.Sex,
 				MergeSameCol:str.Sex,
 			},
-			klee.NodeFuncReturnTableCol{
+			typedef.NodeFuncReturnTableCol{
 				Name: "年龄",
 				Width: 100,
 				Align: str.Name,
 			},
-			klee.NodeFuncReturnTableCol{
+			typedef.NodeFuncReturnTableCol{
 				Name: "性别",
 				Width: 100,
 			},
 		},
-		Row: []klee.NodeFuncReturnTableRow{
-			klee.NodeFuncReturnTableRow{
+		Row: []typedef.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"可莉", 10, "女"},
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"七七", 1000, "女"},
 				State: protoManage.State_StateUnknow,
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"莫娜", 201, "女"},
 				State: protoManage.State_StateNormal,
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"莫娜", 202, "女"},
 				State: protoManage.State_StateNormal,
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"莫娜", 203, "女"},
 				State: protoManage.State_StateNormal,
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"莫娜", 203, "女"},
 				State: protoManage.State_StateNormal,
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"莫娜", 205, "女"},
 				State: protoManage.State_StateNormal,
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"原石", "原石", "原石"},
 				State: protoManage.State_StateNormal,
 				MergeSameRow:true,
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"香菱", 15, "女"},
 				State: protoManage.State_StateWarn,
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"行秋", 300, "男"},
 				State: protoManage.State_StateError,
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"行秋", 300, "男"},
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"行秋", 300, "男"},
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"可莉", 10, "女"},
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"七七", 1000, "女"},
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"莫娜", 200, "女"},
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"香菱", 15, "女"},
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"香菱", 15, "女"},
 				State: protoManage.State_StateError,
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"香菱", 15, "女"},
 			},
-			klee.NodeFuncReturnTableRow{
+			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"行秋", 300, "男"},
 			},
 		},
 	}
-	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Table,
-		Value: aa, State: klee.NodeFuncCallStateWarn}
+	return &aa, nil
 }
 
-func testRectFunc7(str *TestUser) *klee.NodeFuncResponse {
-	return &klee.NodeFuncResponse{Type: protoManage.NodeFuncReturnType_Charts,
-		Value: getEcharts(), State: klee.NodeFuncCallStateSuccess}
+func testRectFunc7(str *TestUser) typedef.NodeFuncReturnCharts {
+	return getEcharts()
+}
+
+type cc struct {
+	Name string	`jsonschema:"title=名称,default="`
+}
+
+type dd struct {
+	Name string
+}
+
+func testRectFunc8(str *TestUser) interface{} {
+	if str.Sex {
+		return nil
+	}else {
+		return errors.New("啦啦啦")
+	}
+}
+
+func testRectFunc9(str *TestUser) error {
+	if str.Sex {
+		return nil
+	}else {
+		return errors.New("哇哦哇哦哇哦")
+	}
+}
+
+func testRectFunc10() {
+	return
+}
+
+func testRectFunc11(str *TestUser) typedef.NodeFuncReturnImage {
+	return typedef.NodeFuncReturnImage{URL: "https://webstatic.mihoyo.com/ys/event/e20210901-fab/images/poster1.bccfc913.jpg",
+	Fit: str.Name}
 }
 
 var testVal = 0.0
@@ -315,31 +375,31 @@ func testReport() (float64, klee.NodeReportValLevel) {
 	return testVal, klee.NodeReportValLevelNormal
 }
 
-func generateBarItems() []opts.BarData {
-	items := make([]opts.BarData, 0)
+func generateBarItems() []opts.LineData {
+	items := make([]opts.LineData, 0)
 	for i := 0; i < 7; i++ {
-		items = append(items, opts.BarData{Value: rand.Intn(300)})
+		items = append(items, opts.LineData{Value: rand.Intn(300)})
 	}
 	return items
 }
 
-func getEcharts() klee.NodeFuncReturnCharts {
+func getEcharts() typedef.NodeFuncReturnCharts {
 	// create a new bar instance
-	bar := charts.NewBar()
+	line := charts.NewLine()
 	// set some global options like Title/Legend/ToolTip or anything else
-	bar.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
+	line.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
 		Title:    "测试",
 		Subtitle: "111",
 	}))
 
 	// Put data into instance
-	bar.SetXAxis([]string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}).
+	line.SetXAxis([]string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}).
 		AddSeries("Category A", generateBarItems()).
 		AddSeries("Category B", generateBarItems())
 	// Where the magic happens
 	buf:= &bytes.Buffer{}
-	bar.Render(buf)
-	dd := klee.NodeFuncReturnCharts{Content: bar.JSON()}
+	line.Render(buf)
+	dd := typedef.NodeFuncReturnCharts{Data: line.JSON()}
 	return dd
 }
 

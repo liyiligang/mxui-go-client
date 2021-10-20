@@ -6,33 +6,46 @@
 package klee
 
 import (
+	"encoding/json"
 	"errors"
+	"github.com/liyiligang/klee-client-go/klee/typedef"
 	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
 )
 
-type NodeReportValLevel int32
-const (
-	NodeReportValUnknown     NodeReportValLevel =   1
-	NodeReportValLevelNormal NodeReportValLevel =   2
-	NodeReportValLevelWarn   NodeReportValLevel =   3
-	NodeReportValLevelError  NodeReportValLevel =   4
-)
-
-func (client *ManageClient) execCallReport(nodeReport *protoManage.NodeReport, callReport CallReportDef) error{
-	val, state := callReport()
-	nodeReportVal := &protoManage.NodeReportVal{ReportID: nodeReport.Base.ID, Value: val, State: protoManage.State(state)}
+func (client *ManageClient) execCallReport(nodeReport *protoManage.NodeReport, callFunc NodeReportCallFunc) error{
+	nodeReportData, err := callFunc()
+	if err != nil {
+		return err
+	}
+	val, err := client.getNodeReportDataJson(nodeReportData)
+	if err != nil {
+		return err
+	}
+	nodeReportVal := &protoManage.NodeReportVal{ReportID: nodeReport.Base.ID, Value: val}
 	return client.sendPB(protoManage.Order_NodeReportUpdateVal, nodeReportVal)
 }
 
-func (client *ManageClient) UpdateReportVal(name string, value float64, nodeReportValLevel NodeReportValLevel) error{
+func (client *ManageClient) UpdateReportVal(name string, nodeReportData *typedef.NodeReportData) error{
 	v, ok := client.data.nodeReportMap.Load(name)
 	if !ok {
 		return errors.New("nodeReport name is non-existent")
 	}
-	val, ok := v.(nodeReportMapVal)
+	nodeReport, ok := v.(nodeReportMapVal)
 	if !ok {
 		return errors.New("val data format is error, its type should be nodeReportMapVal")
 	}
-	nodeReportVal := &protoManage.NodeReportVal{ReportID: val.nodeReportID, Value: value, State: protoManage.State(nodeReportValLevel)}
+	val, err := client.getNodeReportDataJson(nodeReportData)
+	if err != nil {
+		return err
+	}
+	nodeReportVal := &protoManage.NodeReportVal{ReportID: nodeReport.nodeReportID, Value: val}
 	return client.sendPB(protoManage.Order_NodeReportUpdateVal, nodeReportVal)
+}
+
+func (client *ManageClient) getNodeReportDataJson(nodeReportData *typedef.NodeReportData) (string, error){
+	if nodeReportData == nil {
+		return "", errors.New("nodeReportData is nil")
+	}
+	data, err := json.Marshal(nodeReportData)
+	return string(data), err
 }

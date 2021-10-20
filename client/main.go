@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
+	"github.com/liyiligang/base/component/Jtool"
 	"github.com/liyiligang/klee-client-go/klee"
 	"github.com/liyiligang/klee-client-go/klee/typedef"
 	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
@@ -117,7 +118,7 @@ func main() {
 	}
 
 	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
-		Name:     "多返回值测试",
+		Name:     "动态返回值测试",
 		CallFunc: testRectFunc8,
 		Level:    klee.NodeFuncLevelSuperManager,
 	})
@@ -152,23 +153,78 @@ func main() {
 		fmt.Println(err)
 	}
 
-	////node report
-	//err = manageClient.RegisterNodeReport("报告测试1", testReport, 3*time.Second, klee.NodeReportLevelVisitor)
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-	//
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "多参数多返回值测试",
+		CallFunc: testRectFunc12,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//node report
+	err = manageClient.RegisterNodeReport(klee.NodeReportRegister{
+		Name: "表格报告",
+		Type: protoManage.NodeReportType_NodeReportTypeTable,
+		CallFunc: testReport1,
+		CallInterval:time.Second*2,
+		Schema:klee.NodeReportSchema{
+			CategoryList:[]klee.NodeReportCategory{
+				klee.NodeReportCategory{
+					Name: "阳光城",
+					Width: 100,
+				},
+				klee.NodeReportCategory{
+					Name: "麓谷",
+					Width: 100,
+				},
+				klee.NodeReportCategory{
+					Name: "梅溪湖",
+					Width: 100,
+				},
+			},
+		},
+		Level:klee.NodeReportLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeReport(klee.NodeReportRegister{
+		Name: "折线报告",
+		Type: protoManage.NodeReportType_NodeReportTypeLine,
+		CallFunc: testReport2,
+		CallInterval:time.Second*2,
+		Schema:klee.NodeReportSchema{
+			CategoryList:[]klee.NodeReportCategory{
+				klee.NodeReportCategory{
+					Name: "阳光城",
+					Width: 100,
+				},
+				klee.NodeReportCategory{
+					Name: "麓谷",
+					Width: 100,
+				},
+				klee.NodeReportCategory{
+					Name: "梅溪湖",
+					Width: 100,
+				},
+			},
+		},
+		Level:klee.NodeReportLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	////node report manual update
 	//err = manageClient.UpdateReportVal("testReport", 1, klee.NodeReportValLevelNormal)
 	//if err != nil {
 	//	fmt.Println(err)
 	//}
 	//
-	////node notify
-	//err = manageClient.SendNodeNotify("testNotify", klee.NodeNotifyLevelWarn)
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
+	//node notify
+	testNotify()
 
 	select {}
 }
@@ -198,7 +254,7 @@ func notifyCall(nodeNotify protoManage.NodeNotify) {
 }
 
 func testRectFunc1(str *TestUser) string {
-	return "aaaaaa"
+	return time.Now().String()
 }
 
 func testRectFunc2(str *TestUser) (*TestUser, error) {
@@ -231,7 +287,7 @@ func testRectFunc5(str *TestUser) typedef.NodeFuncReturnFile {
 
 func testRectFunc6(str *TestUser) (*typedef.NodeFuncReturnTable, error) {
 	aa := typedef.NodeFuncReturnTable{
-		Stripe: str.Sex,
+		//Stripe: str.Sex,
 		Border: str.Sex,
 		ShowIndex: str.Sex,
 		ShowSummary:false,
@@ -246,7 +302,7 @@ func testRectFunc6(str *TestUser) (*typedef.NodeFuncReturnTable, error) {
 				Name: "姓名",
 				Width: 200,
 				Resizable:str.Sex,
-				MergeSameCol:str.Sex,
+				//MergeSameCol:str.Sex,
 			},
 			typedef.NodeFuncReturnTableCol{
 				Name: "年龄",
@@ -289,7 +345,7 @@ func testRectFunc6(str *TestUser) (*typedef.NodeFuncReturnTable, error) {
 			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"原石", "原石", "原石"},
 				State: protoManage.State_StateNormal,
-				MergeSameRow:true,
+				//MergeSameRow:true,
 			},
 			typedef.NodeFuncReturnTableRow{
 				Data: []interface{}{"香菱", 15, "女"},
@@ -369,10 +425,79 @@ func testRectFunc11(str *TestUser) typedef.NodeFuncReturnImage {
 	Fit: str.Name}
 }
 
-var testVal = 0.0
-func testReport() (float64, klee.NodeReportValLevel) {
-	testVal += 1
-	return testVal, klee.NodeReportValLevelNormal
+func testRectFunc12(str *TestUser) (int, int, string, bool, error) {
+	if str.Sex {
+		return 1 , 1, "a", false, nil
+	}else {
+		return 2 , 2, "a", false, errors.New("欸嘿")
+	}
+}
+
+var testVal1 = 0.0
+func testReport1() (*typedef.NodeReportData, error) {
+	testVal1 += 1
+	return &typedef.NodeReportData{ValueList:[]typedef.NodeReportVal{
+		typedef.NodeReportVal{
+			Value: testVal1+0.12,
+		},
+		typedef.NodeReportVal{
+			Value: testVal1+1,
+			State: protoManage.State_StateError,
+		},
+		typedef.NodeReportVal{
+			Value: testVal1*2,
+			State: protoManage.State_StateNormal,
+		},
+	}}, nil
+}
+
+var testVal2 = 5000
+var testVal22 = 0
+var testVal33 = 100
+func testReport2() (*typedef.NodeReportData, error) {
+	r1, _ := Jtool.GetRandInt(1, 10000)
+
+	if testVal22 > 10000 {
+		testVal33 = -100
+	}
+
+	if testVal22 < 100 {
+		testVal33 = 100
+	}
+	testVal22 += testVal33
+
+	state1 := protoManage.State_StateNormal
+	if r1 > 8000 {
+		state1 = protoManage.State_StateError
+	}else if r1 > 5000 {
+		state1 = protoManage.State_StateWarn
+	}else if r1 < 2000 {
+		state1 = protoManage.State_StateUnknow
+	}
+
+	state2 := protoManage.State_StateNormal
+	if testVal22 > 8000 {
+		state2 = protoManage.State_StateError
+	}else if testVal22 > 5000 {
+		state2 = protoManage.State_StateWarn
+	}else if testVal22 < 2000 {
+		state2 = protoManage.State_StateUnknow
+	}
+
+	return &typedef.NodeReportData{ValueList:[]typedef.NodeReportVal{
+		typedef.NodeReportVal{
+			Value: testVal2,
+		},
+
+		typedef.NodeReportVal{
+			Value: r1,
+			State: state1,
+		},
+		typedef.NodeReportVal{
+			Value: testVal22,
+			State: state2,
+		},
+	}}, nil
 }
 
 func generateBarItems() []opts.LineData {
@@ -404,3 +529,16 @@ func getEcharts() typedef.NodeFuncReturnCharts {
 }
 
 
+func testNotify()  {
+	go func() {
+		for  {
+			r1, _ := Jtool.GetRandInt(1, 4)
+			r2 := Jtool.GetRandChinese(5, 20)
+			err := manageClient.SendNodeNotify(r2, klee.NodeNotifyLevel(r1), false)
+			if err != nil {
+				fmt.Println(err)
+			}
+			time.Sleep(1*time.Second)
+		}
+	}()
+}

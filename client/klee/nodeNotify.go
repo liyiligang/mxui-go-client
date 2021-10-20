@@ -15,13 +15,13 @@ const (
 	NodeNotifyLevelError   NodeNotifyLevel =  NodeNotifyLevel(protoManage.State_StateError)
 )
 
-func (client *ManageClient) SendNodeNotify(msg string, nodeNotifyLevel NodeNotifyLevel) error {
+func (client *ManageClient) SendNodeNotify(msg string, nodeNotifyLevel NodeNotifyLevel, show bool) error {
 	node, err := client.GetNode()
 	if err != nil {
 		return err
 	}
 	nodeNotify := &protoManage.NodeNotify{SenderID: node.Base.ID, SenderType: protoManage.NotifySenderType_NotifySenderTypeNode,
-		Message: msg, State: protoManage.State(nodeNotifyLevel)}
+		Message: msg, State: protoManage.State(nodeNotifyLevel), ShowPop: show}
 	return client.sendPB(protoManage.Order_NodeNotifyAdd, nodeNotify)
 }
 

@@ -76,9 +76,9 @@ func (client *ManageClient) nodeFuncRegisterCheck(callFunc interface{}) error {
 	if vType.Kind() != reflect.Func {
 		return errors.New("CallFunc 必须是 reflect.Func 类型")
 	}
-	//if vType.NumIn() != 1 {
-	//	return errors.New("CallFunc 参数数量必须为1")
-	//}
+	if vType.NumIn() > 1 {
+		return errors.New("CallFunc 参数数量不能超过1个")
+	}
 	if vType.NumIn() > 0 {
 		if vType.In(0).Kind() == reflect.Ptr {
 			if vType.In(0).Elem().Kind() != reflect.Struct {
@@ -88,10 +88,6 @@ func (client *ManageClient) nodeFuncRegisterCheck(callFunc interface{}) error {
 			return errors.New("函数参数必须是 reflect.Struct 类型")
 		}
 	}
-
-	//if vType.NumOut() != 1 {
-	//	return errors.New("CallFunc 返回值数量必须为1")
-	//}
 	return nil
 }
 
@@ -132,28 +128,28 @@ func (client *ManageClient) getNodeFuncReturnType(rType reflect.Type) (protoMana
 		return protoManage.NodeFuncReturnType_Error, false
 	}
 	switch rType.Kind() {
-	case reflect.Bool:
-	case reflect.Int:
-	case reflect.Int8:
-	case reflect.Int16:
-	case reflect.Int32:
-	case reflect.Int64:
-	case reflect.Uint:
-	case reflect.Uint8:
-	case reflect.Uint16:
-	case reflect.Uint32:
-	case reflect.Uint64:
-	case reflect.Float32:
-	case reflect.Float64:
-	case reflect.String:
+	case reflect.Bool,
+	reflect.Int,
+	reflect.Int8,
+	reflect.Int16,
+	reflect.Int32,
+	reflect.Int64,
+	reflect.Uint,
+	reflect.Uint8,
+	reflect.Uint16,
+	reflect.Uint32,
+	reflect.Uint64,
+	reflect.Float32,
+	reflect.Float64,
+	reflect.String:
 		return protoManage.NodeFuncReturnType_Text, true
-	case reflect.Array:
-	case reflect.Map:
-	case reflect.Slice:
-	case reflect.Struct:
+	case reflect.Array,
+	reflect.Map,
+	reflect.Slice,
+	reflect.Struct:
 		return protoManage.NodeFuncReturnType_Json, true
 	}
-	return protoManage.NodeFuncReturnType_Unsure, false
+	return protoManage.NodeFuncReturnType_Unknown, false
 }
 
 func (client *ManageClient) getNodeFuncReturnErrorPos(rType reflect.Type) int {

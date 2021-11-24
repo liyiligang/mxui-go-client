@@ -36,6 +36,13 @@ type TestUser struct {
 	Color    string         `json:"fav_color,omitempty" jsonschema:"title=颜色,enum=red,enum=green,enum=blue,default=green" jsonschema_extras:"enumNames=红色,enumNames=绿色,enumNames=蓝色"`
 }
 
+//jsonschema_extras:"ui:widget"='UploadWidget',ui:btnText=点击上传
+type FileUpload struct {
+	Name     	 string    		`json:"name,omitempty" jsonschema:"title=姓名,default="`
+	File     	 string    		`json:"file,omitempty" jsonschema:"title=文件上传" jsonschema_extras:"ui:widget=UploadWidget, ui:btnText=点击上传"`
+	FileList     []string    	`jsonschema:"title=文件上传" jsonschema_extras:"ui:widget=UploadWidget, ui:btnText=点击上传"`
+}
+
 func main() {
 
 	//example
@@ -45,12 +52,6 @@ func main() {
 	if err !=nil {
 		fmt.Println("link error: ", err)
 		return
-	}
-
-	//node link
-	err = manageClient.UpdateNodeLink(15, klee.NodeLinkStateConnected)
-	if err != nil {
-		fmt.Println(err)
 	}
 
 	//node func
@@ -156,6 +157,15 @@ func main() {
 	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
 		Name:     "多参数多返回值测试",
 		CallFunc: testRectFunc12,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "文件上传",
+		CallFunc: testRectFunc13,
 		Level:    klee.NodeFuncLevelSuperManager,
 	})
 	if err != nil {
@@ -431,6 +441,10 @@ func testRectFunc12(str *TestUser) (int, int, string, bool, error) {
 	}else {
 		return 2 , 2, "a", false, errors.New("欸嘿")
 	}
+}
+
+func testRectFunc13(file *FileUpload) string {
+	return file.File
 }
 
 var testVal1 = 0.0

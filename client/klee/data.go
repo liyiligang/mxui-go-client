@@ -6,7 +6,6 @@
 package klee
 
 import (
-	"errors"
 	"github.com/liyiligang/base/commonConst"
 	"github.com/liyiligang/base/component/Jrpc"
 	"github.com/liyiligang/base/component/Jtool"
@@ -59,8 +58,6 @@ func (client *ManageClient) getFuncName(callFunc interface{}) string {
 
 func (client *ManageClient) getManageAuth() ([]byte, error) {
 	reqNodeLogin := protoManage.ReqNodeLogin{
-		NodeGroup: protoManage.NodeGroup{Name:client.config.NodeGroupName},
-		NodeType: protoManage.NodeType{Name:client.config.NodeTypeName},
 		Node: protoManage.Node{Name:client.config.NodeName},
 	}
 	return reqNodeLogin.Marshal()
@@ -78,23 +75,12 @@ func (client *ManageClient) getManageServerNode(addr string) *commonConst.Common
 }
 
 func (client *ManageClient) getNodeStreamByte() ([]byte, error) {
-	var nodeLinkList  	[]protoManage.NodeLink
-	client.data.nodeLinkMap.Range(func(key, value interface{}) bool {
-		nodeLink, ok := value.(*protoManage.NodeLink)
-		if !ok {
-			client.RpcStreamError("nodeLinkMap range error: ", errors.New("nodeLink data format is error, its type should be protoManage.NodeLink"))
-			return false
-		}
-		nodeLinkList = append(nodeLinkList, *nodeLink)
-		return true
-	})
 	node, err := client.GetNode()
 	if err != nil {
 		node = &protoManage.Node{}
 	}
 	reqNodeOnline := protoManage.ReqNodeOnline{
 		Node:                 *node,
-		NodeLinkList:         nodeLinkList,
 	}
 	return reqNodeOnline.Marshal()
 }

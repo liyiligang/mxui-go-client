@@ -17,7 +17,7 @@ func (client *ManageClient) RpcServeConnected(rpcKeepalive *Jrpc.RpcKeepalive, i
 	if isReConnect {
 		err := client.initManageClientStream()
 		if err != nil {
-			client.RpcStreamError("rpc stream init error: ", err)
+			client.RpcStreamError("rpc stream init error", err)
 		}
 	}
 }
@@ -35,20 +35,20 @@ func (client *ManageClient) RpcStreamConnect(stream *Jrpc.RpcStream) (interface{
 	if err != nil {
 		return 0, err
 	}
-	stream.SetRpcStreamClientMsg(pbByte)
+	stream.WriteRpcStreamClientHeader(pbByte)
 	return commonConst.ManageNodeID, nil
 }
 
 func (client *ManageClient) RpcStreamConnected(stream *Jrpc.RpcStream) error {
 	client.setRpcStream(stream)
-	err := client.nodeOnline(stream.GetParm().RpcStreamServerHeader)
+	err := client.nodeOnline(stream.GetRpcContext().RpcStreamServerHeader)
 	if err != nil{
 		return err
 	}
 	return nil
 }
 
-func (client *ManageClient) RpcStreamClose(stream *Jrpc.RpcStream) {
+func (client *ManageClient) RpcStreamClosed(stream *Jrpc.RpcStream) {
 	client.setRpcStream(nil)
 }
 
@@ -81,7 +81,7 @@ func (client *ManageClient) RpcStreamReceiver(stream *Jrpc.RpcStream, recv inter
 }
 
 func (client *ManageClient) RpcStreamError(text string, err error) {
-	msg := text
+	msg := text + ": "
 	if err != nil {
 		msg += err.Error()
 	}

@@ -34,19 +34,26 @@ type TestUser struct {
 	Age		 []int     		`jsonschema:"title=年龄"`
 	Date	 time.Time		`jsonschema:"title=日期,default=2020-01-16T02:11:11.000Z"`
 	Color    string         `json:"fav_color,omitempty" jsonschema:"title=颜色,enum=red,enum=green,enum=blue,default=green" jsonschema_extras:"enumNames=红色,enumNames=绿色,enumNames=蓝色"`
+	ColorM   []string       `json:"fav_colorM,omitempty" jsonschema:"title=颜色M" jsonschema_extras:"ui:widget=CheckboxesWidget,uniqueItems=1"`
 }
 
-//jsonschema_extras:"ui:widget"='UploadWidget',ui:btnText=点击上传
+type TestJsonExtras struct {
+	Color []string		`schema:"title=颜色,uniqueItems=true,enum=red;green;blue,enumNames=红色;绿色;蓝色,default=green;red" ui:"{\"ui:widget\":\"CheckboxesWidget\"}"`
+	Color1 	string		`schema:"title=颜色,enum=red;green;blue,enumNames=红色;绿色;蓝色,default=green"`
+	Text 	string		`schema:"title=节点名,default=" ui:"{\"ui:options\":{\"type\":\"textarea\",\"rows\":6}}"`
+}
+
 type FileUpload struct {
-	Name     	 string    		`json:"name,omitempty" jsonschema:"title=姓名,default="`
-	File     	 string    		`json:"file,omitempty" jsonschema:"title=文件上传" jsonschema_extras:"ui:widget=UploadWidget, ui:btnText=点击上传"`
-	FileList     []string    	`jsonschema:"title=文件上传" jsonschema_extras:"ui:widget=UploadWidget, ui:btnText=点击上传"`
+	Name     	 string    		`json:"name,omitempty" schema:"title=姓名,default="`
+	File     	 string    		`json:"file,omitempty" schema:"title=文件上传" ui:"{\"ui:widget\":\"UploadWidget\",\"ui:btnText\":\"上传文件\"}"`
+	FileList     []string    	`schema:"title=文件批量上传" ui:"{\"ui:widget\":\"UploadWidget\",\"ui:btnText\":\"批量上传文件\"}"`
 }
 
 func main() {
 
 	//example
 	//link
+
 	var err error
 	manageClient, err = initClient()
 	if err !=nil {
@@ -166,6 +173,15 @@ func main() {
 	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
 		Name:     "文件上传",
 		CallFunc: testRectFunc13,
+		Level:    klee.NodeFuncLevelSuperManager,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+		Name:     "通用json测试",
+		CallFunc: testRectFunc14,
 		Level:    klee.NodeFuncLevelSuperManager,
 	})
 	if err != nil {
@@ -445,6 +461,10 @@ func testRectFunc12(str *TestUser) (int, int, string, bool, error) {
 
 func testRectFunc13(file *FileUpload) string {
 	return file.File
+}
+
+func testRectFunc14(str *TestJsonExtras) string {
+	return "str.Color"
 }
 
 var testVal1 = 0.0

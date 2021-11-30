@@ -96,7 +96,7 @@ func (client *ManageClient) startTicker(interval time.Duration, nodeReport *prot
 			case <-ticker.C:
 				err := client.execCallReport(nodeReport, callFunc)
 				if err != nil {
-					client.RpcStreamError("node report call error: ", err)
+					client.RpcStreamError("node report call error", err)
 				}
 			case <-ctx.Done():
 				return

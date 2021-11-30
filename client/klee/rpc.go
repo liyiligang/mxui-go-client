@@ -22,7 +22,7 @@ func InitManageClient(config ManageClientConfig) (*ManageClient, error) {
 			PublicKeyPath: config.PublicKeyPath,
 		},
 		CertName:       config.CertName,
-		Auth:           auth,
+		Header:         auth,
 		ConnectTimeOut: config.ConnectTimeOut,
 	})
 	if err != nil {
@@ -56,6 +56,6 @@ func (client *ManageClient) Close() {
 func (client *ManageClient) closeConn() {
 	err := client.conn.Close()
 	if err != nil {
-		client.RpcStreamError("rpc close error: ", err)
+		client.RpcStreamError("rpc close error", err)
 	}
 }

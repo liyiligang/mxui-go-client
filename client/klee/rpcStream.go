@@ -14,11 +14,18 @@ import (
 )
 
 func (client *ManageClient) initManageClientStream() error {
-	rpcStream, err := Jrpc.GrpcStreamClientInit(new(protoManage.Message), client)
+	rpcStream, err := Jrpc.GrpcStreamClientInit(new(protoManage.Message), Jrpc.RpcStreamConfig{
+		RpcStreamConnect:client.RpcStreamConnect,
+		RpcStreamConnected:client.RpcStreamConnected,
+		RpcStreamClosed:client.RpcStreamClosed,
+		RpcStreamReceiver:client.RpcStreamReceiver,
+		RpcStreamError:client.RpcStreamError,
+	})
 	if err != nil {
 		return err
 	}
-	channel, err := client.engine.RpcChannel(rpcStream.GetContext(), grpc.WaitForReady(true))
+
+	channel, err := client.engine.RpcChannel(Jrpc.SetRpcStreamClientHeader(rpcStream.GetRpcContext().RpcStreamClientHeader), grpc.WaitForReady(true))
 	if err != nil {
 		return err
 	}
@@ -28,10 +35,10 @@ func (client *ManageClient) initManageClientStream() error {
 func (client *ManageClient) closeStream() {
 	rpcStream, err := client.getRpcStream()
 	if err != nil {
-		client.RpcStreamError("rpc stream close error: ", err)
+		client.RpcStreamError("rpc stream close error", err)
 		return
 	}
-	rpcStream.Close()
+	rpcStream.Close(false)
 }
 
 func (client *ManageClient) sendPB(order protoManage.Order, pb proto.Message) error {

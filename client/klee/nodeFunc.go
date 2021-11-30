@@ -8,7 +8,7 @@ package klee
 import (
 	"context"
 	"errors"
-	"github.com/alecthomas/jsonschema"
+	"github.com/liyiligang/klee-client-go/jsonSchema"
 	"github.com/liyiligang/klee-client-go/klee/typedef"
 	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
 	"reflect"
@@ -92,7 +92,7 @@ func (client *ManageClient) nodeFuncRegisterCheck(callFunc interface{}) error {
 }
 
 func (client *ManageClient) getNodeFuncJsonSchema(rType reflect.Type) (string, error) {
-	schema := jsonschema.ReflectFromType(rType)
+	schema := jsonSchema.ReflectFromType(rType)
 	byte, err := schema.MarshalJSON()
 	return string(byte), err
 }

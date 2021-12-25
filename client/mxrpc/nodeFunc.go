@@ -1,37 +1,42 @@
-// Copyright 2021 The Authors. All rights reserved.
-// Author: liyiligang
-// Date: 2021/06/23 15:52
-// Description:
+/*
+ * Copyright 2021 liyiligang.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-package klee
+package mxrpc
 
 import (
 	"context"
 	"errors"
-	"github.com/liyiligang/klee-client-go/jsonSchema"
-	"github.com/liyiligang/klee-client-go/klee/typedef"
-	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
+	"github.com/liyiligang/base/component/Jtool"
+	"github.com/liyiligang/mxrpc-go-client/jsonSchema"
+	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxrpc-go-client/typedef"
+	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
 	"reflect"
-)
-
-type NodeFuncLevel int32
-const (
-	NodeFuncLevelVisitor      NodeFuncLevel =   1
-	NodeFuncLevelMember       NodeFuncLevel =   2
-	NodeFuncLevelManager      NodeFuncLevel =   3
-	NodeFuncLevelSuperManager NodeFuncLevel =   4
 )
 
 type NodeFuncRegister struct {
 	Name 			string
 	CallFunc 		interface{}
-	Level 			NodeFuncLevel
+	Level 			constant.UserLevel
 	ReturnType      protoManage.NodeFuncReturnType
 	BaseType		bool
 	ErrorPos		int
 }
 
-func (client *ManageClient) RegisterNodeFunc(nodeFunc NodeFuncRegister) error {
+func (client *Client) RegisterNodeFunc(nodeFunc NodeFuncRegister) error {
 	err := client.nodeFuncRegisterCheck(nodeFunc.CallFunc)
 	if err != nil {
 		return err
@@ -51,11 +56,11 @@ func (client *ManageClient) RegisterNodeFunc(nodeFunc NodeFuncRegister) error {
 	}
 	nodeFunc.ErrorPos  = client.getNodeFuncReturnErrorPos(rType)
 
-	node, err := client.GetNode()
+	node, err := client.getNode()
 	if err != nil {
 		return err
 	}
-	callName := client.getFuncName(nodeFunc.CallFunc)
+	callName := Jtool.GetFuncName(nodeFunc.CallFunc)
 	protoNodeFunc := protoManage.NodeFunc{NodeID: node.Base.ID, Name: nodeFunc.Name,
 		Func: callName, Schema: schema, Level: protoManage.Level(nodeFunc.Level)}
 	ctx, _ := context.WithTimeout(context.Background(), client.config.RequestTimeOut)
@@ -68,36 +73,36 @@ func (client *ManageClient) RegisterNodeFunc(nodeFunc NodeFuncRegister) error {
 }
 
 
-func (client *ManageClient) nodeFuncRegisterCheck(callFunc interface{}) error {
+func (client *Client) nodeFuncRegisterCheck(callFunc interface{}) error {
 	if callFunc == nil {
-		return errors.New("CallFunc 不能为nil值")
+		return errors.New("register function must not be nil")
 	}
 	vType:=reflect.TypeOf(callFunc)
 	if vType.Kind() != reflect.Func {
-		return errors.New("CallFunc 必须是 reflect.Func 类型")
+		return errors.New("register function kind must be reflect.Func")
 	}
 	if vType.NumIn() > 1 {
-		return errors.New("CallFunc 参数数量不能超过1个")
+		return errors.New("register function parameters cannot be greater than 1")
 	}
 	if vType.NumIn() > 0 {
 		if vType.In(0).Kind() == reflect.Ptr {
 			if vType.In(0).Elem().Kind() != reflect.Struct {
-				return errors.New("函数参数必须是 *reflect.Struct 类型")
+				return errors.New("register function parameters kind must be reflect.Struct or *reflect.Struct")
 			}
 		}else if vType.In(0).Kind() != reflect.Struct {
-			return errors.New("函数参数必须是 reflect.Struct 类型")
+			return errors.New("register function parameters kind must be reflect.Struct or *reflect.Struct")
 		}
 	}
 	return nil
 }
 
-func (client *ManageClient) getNodeFuncJsonSchema(rType reflect.Type) (string, error) {
+func (client *Client) getNodeFuncJsonSchema(rType reflect.Type) (string, error) {
 	schema := jsonSchema.ReflectFromType(rType)
-	byte, err := schema.MarshalJSON()
-	return string(byte), err
+	bytes, err := schema.MarshalJSON()
+	return string(bytes), err
 }
 
-func (client *ManageClient) getNodeFuncReturnType(rType reflect.Type) (protoManage.NodeFuncReturnType, bool){
+func (client *Client) getNodeFuncReturnType(rType reflect.Type) (protoManage.NodeFuncReturnType, bool){
 	if rType == nil {
 		return protoManage.NodeFuncReturnType_NotReturn, false
 	}
@@ -152,7 +157,7 @@ func (client *ManageClient) getNodeFuncReturnType(rType reflect.Type) (protoMana
 	return protoManage.NodeFuncReturnType_Unknown, false
 }
 
-func (client *ManageClient) getNodeFuncReturnErrorPos(rType reflect.Type) int {
+func (client *Client) getNodeFuncReturnErrorPos(rType reflect.Type) int {
 	for i:=0; i<rType.NumOut(); i++ {
 		res := rType.Out(i)
 		if res != nil {

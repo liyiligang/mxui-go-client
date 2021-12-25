@@ -1,51 +1,60 @@
-// Copyright 2021 The Authors. All rights reserved.
-// Author: liyiligang
-// Date: 2021/06/25 14:36
-// Description:
+/*
+ * Copyright 2021 liyiligang.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-package klee
+package mxrpc
 
 import (
 	"encoding/json"
 	"errors"
-	"github.com/liyiligang/klee-client-go/klee/typedef"
-	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
+	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxrpc-go-client/typedef"
 	"reflect"
 )
 
-func (client *ManageClient) reqNodeFuncCall(message []byte) error {
+func (client *Client) reqNodeFuncCall(message []byte) error {
 	var err error
 	req := protoManage.ReqNodeFuncCall{}
 	err = req.Unmarshal(message)
 	if err != nil {
 		return err
 	}
-	defer func(){
-		if err != nil  {
-			ans := protoManage.AnsNodeFuncCall{Error: err.Error(), NodeFuncCall: protoManage.NodeFuncCall{
-				Base: req.NodeFuncCall.Base, State: protoManage.State_StateError, ManagerID: req.NodeFuncCall.ManagerID,
-				FuncID: req.NodeFuncCall.FuncID, ReturnVal: err.Error(), ReturnType: protoManage.NodeFuncReturnType_Error,
-			}}
-			client.sendPB(protoManage.Order_NodeFuncCallAns, &ans)
-		}
-	}()
+	err = client.nodeFuncCall(&req)
+	if err != nil  {
+		ans := protoManage.AnsNodeFuncCall{Error: err.Error(), NodeFuncCall: protoManage.NodeFuncCall{
+			Base: req.NodeFuncCall.Base, State: protoManage.State_StateError, ManagerID: req.NodeFuncCall.ManagerID,
+			FuncID: req.NodeFuncCall.FuncID, ReturnVal: err.Error(), ReturnType: protoManage.NodeFuncReturnType_Error,
+		}}
+		return client.sendPB(protoManage.Order_NodeFuncCallAns, &ans)
+	}
+	return nil
+}
+
+func (client *Client) nodeFuncCall(req *protoManage.ReqNodeFuncCall) error {
 	nodeFuncLoad, ok := client.data.nodeFuncMap.Load(req.NodeFuncCall.FuncID)
 	if !ok {
-		err = errors.New("func callback is non-existent")
-		return err
+		return errors.New("function info callback is not found")
 	}
-
 	nodeFunc, ok := nodeFuncLoad.(*NodeFuncRegister)
 	if !ok {
-		err = errors.New("nodeFuncMap data is error")
-		return err
+		return errors.New("function info assert fail with *NodeFuncRegister")
 	}
-
 	res, err := client.callFuncByReflect(nodeFunc, req.NodeFuncCall.Parameter)
 	if err != nil {
 		return err
 	}
-
 	returnType := nodeFunc.ReturnType
 	baseType := nodeFunc.BaseType
 	if returnType == protoManage.NodeFuncReturnType_Unknown {
@@ -59,11 +68,9 @@ func (client *ManageClient) reqNodeFuncCall(message []byte) error {
 			return err
 		}
 	}
-
 	if baseType {
 		res = client.packageBaseType(returnType, res)
 	}
-
 	var data []byte
 	if res != nil {
 		data , err = json.Marshal(res)
@@ -79,7 +86,7 @@ func (client *ManageClient) reqNodeFuncCall(message []byte) error {
 	return client.sendPB(protoManage.Order_NodeFuncCallAns, &ans)
 }
 
-func (client *ManageClient) callFuncByReflect(nodeFunc *NodeFuncRegister, nodeFuncPara string) (interface{}, error) {
+func (client *Client) callFuncByReflect(nodeFunc *NodeFuncRegister, nodeFuncPara string) (interface{}, error) {
 	funcCallRef := reflect.ValueOf(nodeFunc.CallFunc)
 	vType:=reflect.TypeOf(nodeFunc.CallFunc)
 	var res []reflect.Value
@@ -111,7 +118,7 @@ func (client *ManageClient) callFuncByReflect(nodeFunc *NodeFuncRegister, nodeFu
 	return nil, nil
 }
 
-func (client *ManageClient) packageBaseType(returnType protoManage.NodeFuncReturnType, val interface{}) interface{}{
+func (client *Client) packageBaseType(returnType protoManage.NodeFuncReturnType, val interface{}) interface{}{
 	if returnType == protoManage.NodeFuncReturnType_Text {
 		val = &typedef.NodeFuncReturnText{Data: val}
 	}else if returnType == protoManage.NodeFuncReturnType_Json {

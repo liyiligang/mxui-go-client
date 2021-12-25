@@ -1,18 +1,32 @@
-// Copyright 2021 The Authors. All rights reserved.
-// Author: liyiligang
-// Date: 2021/06/24 14:30
-// Description:
+/*
+ * Copyright 2021 liyiligang.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-package klee
+package mxrpc
 
 import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/liyiligang/klee-client-go/klee/typedef"
-	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
+	"github.com/liyiligang/base/component/Jtool"
+	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
 	"time"
 )
+
+type NodeReportCallFunc func() (*NodeReportData, error)
 
 type NodeReportRegister struct {
 	Name 					string
@@ -20,7 +34,7 @@ type NodeReportRegister struct {
 	CallFunc 				NodeReportCallFunc
 	CallInterval 			time.Duration
 	Schema					NodeReportSchema
-	Level 					NodeReportLevel
+	Level 					constant.UserLevel
 }
 
 type NodeReportSchema struct {
@@ -32,34 +46,24 @@ type NodeReportCategory struct {
 	Width			uint32
 }
 
-type NodeReportCallFunc func() (*typedef.NodeReportData, error)
-
 type nodeReportMapVal struct {
 	nodeReportID			int64
 	cancel 					context.CancelFunc
 }
 
-type NodeReportLevel int32
-const (
-	NodeReportLevelVisitor      NodeReportLevel =   1
-	NodeReportLevelMember       NodeReportLevel =   2
-	NodeReportLevelManager      NodeReportLevel =   3
-	NodeReportLevelSuperManager NodeReportLevel =   4
-)
-
-func (client *ManageClient) RegisterNodeReport(nodeReport NodeReportRegister) error {
-	node, err := client.GetNode()
+func (client *Client) RegisterNodeReport(nodeReport NodeReportRegister) error {
+	node, err := client.getNode()
 	if err != nil {
 		return err
 	}
 	if nodeReport.CallFunc == nil {
-		return errors.New("nodeReport callFunc is nil")
+		return errors.New("node report register function must not be nil")
 	}
 	schema, err := client.getNodeReportSchemaJson(&nodeReport.Schema)
 	if err != nil {
 		return err
 	}
-	callName := client.getFuncName(nodeReport.CallFunc)
+	callName := Jtool.GetFuncName(nodeReport.CallFunc)
 	protoNodeReport := protoManage.NodeReport{NodeID: node.Base.ID, Name: nodeReport.Name,
 		Func: callName, Schema: schema, Type: nodeReport.Type, Level:protoManage.Level(nodeReport.Level),
 		Interval:nodeReport.CallInterval.Milliseconds()}
@@ -78,15 +82,15 @@ func (client *ManageClient) RegisterNodeReport(nodeReport NodeReportRegister) er
 	return nil
 }
 
-func (client *ManageClient) getNodeReportSchemaJson(schema *NodeReportSchema) (string, error){
+func (client *Client) getNodeReportSchemaJson(schema *NodeReportSchema) (string, error){
 	if schema == nil {
-		return "", errors.New("schema is nil")
+		return "", errors.New("node report schema must not be nil")
 	}
 	data, err := json.Marshal(schema)
 	return string(data), err
 }
 
-func (client *ManageClient) startTicker(interval time.Duration, nodeReport *protoManage.NodeReport, callFunc NodeReportCallFunc) context.CancelFunc {
+func (client *Client) startTicker(interval time.Duration, nodeReport *protoManage.NodeReport, callFunc NodeReportCallFunc) context.CancelFunc {
 	ticker := time.NewTicker(interval)
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
@@ -106,7 +110,7 @@ func (client *ManageClient) startTicker(interval time.Duration, nodeReport *prot
 	return cancel
 }
 
-func (client *ManageClient) stopTicker(nodeReportName string){
+func (client *Client) stopTicker(nodeReportName string){
 	v, ok := client.data.nodeReportMap.Load(nodeReportName)
 	if ok {
 		val, ok := v.(nodeReportMapVal)

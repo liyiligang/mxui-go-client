@@ -1,9 +1,20 @@
-// Copyright 2021 The Authors. All rights reserved.
-// Author: liyiligang
-// Date: 2021/11/26 16:23
-// Description:
+/*
+ * Copyright 2021 liyiligang.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-package klee
+package mxrpc
 
 import (
 	"bytes"
@@ -12,21 +23,26 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/liyiligang/base/commonConst"
 	"github.com/liyiligang/base/component/Jrpc"
 	"github.com/liyiligang/base/component/Jtool"
-	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
+	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
 	"io"
 	"os"
 	"path/filepath"
 )
 
-func (client *ManageClient) CheckNodeResourceWithFile(filePath string) (*protoManage.NodeResource, error){
+func (client *Client) CheckNodeResourceWithFile(filePath string) (*protoManage.NodeResource, error){
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	defer func(){
+		err := file.Close()
+		if err != nil {
+			client.RpcStreamError("file close error", err)
+		}
+	}()
 	fileInfo, err := file.Stat()
 	if err != nil {
 		return nil, err
@@ -48,7 +64,7 @@ func (client *ManageClient) CheckNodeResourceWithFile(filePath string) (*protoMa
 	return client.engine.CheckNodeResource(ctx, req)
 }
 
-func (client *ManageClient) CheckNodeResourceWithByte(name string, data []byte) (*protoManage.NodeResource, error){
+func (client *Client) CheckNodeResourceWithByte(name string, data []byte) (*protoManage.NodeResource, error){
 	md := md5.Sum(data)
 	md5str := fmt.Sprintf("%x", md)
 	req := &protoManage.NodeResource{
@@ -63,7 +79,7 @@ func (client *ManageClient) CheckNodeResourceWithByte(name string, data []byte) 
 }
 
 
-func (client *ManageClient) UploadNodeResourceWithFile(filePath string) (*protoManage.NodeResource, error){
+func (client *Client) UploadNodeResourceWithFile(filePath string) (*protoManage.NodeResource, error){
 	nodeResource ,err := client.CheckNodeResourceWithFile(filePath)
 	if err != nil {
 		return nil, err
@@ -73,7 +89,12 @@ func (client *ManageClient) UploadNodeResourceWithFile(filePath string) (*protoM
 		if err != nil {
 			return nil, err
 		}
-		defer file.Close()
+		defer func(){
+			err := file.Close()
+			if err != nil {
+				client.RpcStreamError("file close error", err)
+			}
+		}()
 		err = client.uploadNodeResource(nodeResource, file)
 		if err != nil {
 			return nil, err
@@ -82,8 +103,11 @@ func (client *ManageClient) UploadNodeResourceWithFile(filePath string) (*protoM
 	return nodeResource, nil
 }
 
-func (client *ManageClient) UploadNodeResourceWithBytes(name string, data []byte) (*protoManage.NodeResource, error){
+func (client *Client) UploadNodeResourceWithBytes(name string, data []byte) (*protoManage.NodeResource, error){
 	nodeResource ,err := client.CheckNodeResourceWithByte(name, data)
+	if err != nil {
+		return nil, err
+	}
 	if !nodeResource.IsExist {
 		buffer := bytes.NewBuffer(data)
 		err = client.uploadNodeResource(nodeResource, buffer)
@@ -94,7 +118,7 @@ func (client *ManageClient) UploadNodeResourceWithBytes(name string, data []byte
 	return nodeResource, nil
 }
 
-func (client *ManageClient) DownloadNodeResourceWithFile(fileName string, fileDir string) (uErr error) {
+func (client *Client) DownloadNodeResourceWithFile(fileName string, fileDir string) (uErr error) {
 	filePath := fileDir + fileName
 	file, err := os.Create(filePath)
 	if err != nil {
@@ -109,7 +133,7 @@ func (client *ManageClient) DownloadNodeResourceWithFile(fileName string, fileDi
 	return client.downloadNodeResource(&protoManage.NodeResource{UUID: fileName}, file)
 }
 
-func (client *ManageClient) DownloadNodeResourceWithBytes(fileName string) ([]byte, error) {
+func (client *Client) DownloadNodeResourceWithBytes(fileName string) ([]byte, error) {
 	buffer := bytes.NewBuffer(nil)
 	err := client.downloadNodeResource(&protoManage.NodeResource{UUID: fileName}, buffer)
 	if err != nil {
@@ -118,7 +142,7 @@ func (client *ManageClient) DownloadNodeResourceWithBytes(fileName string) ([]by
 	return buffer.Bytes(), nil
 }
 
-func (client *ManageClient) uploadNodeResource(nodeResource *protoManage.NodeResource, read io.Reader) error {
+func (client *Client) uploadNodeResource(nodeResource *protoManage.NodeResource, read io.Reader) error {
 	pbData, err := nodeResource.Marshal()
 	if err != nil {
 		return err
@@ -127,7 +151,7 @@ func (client *ManageClient) uploadNodeResource(nodeResource *protoManage.NodeRes
 	if err != nil {
 		return err
 	}
-	err = Jtool.ReadIOWithSize(read, commonConst.GrpcMaxMsgSize/2, func(buf []byte) error{
+	err = Jtool.ReadIOWithSize(read, constant.ConstRpcClientMaxMsgSize/2, func(buf []byte) error{
 		return upload.Send(&protoManage.ReqNodeResourceUpload{Data: buf})
 	})
 	if err != nil {
@@ -137,7 +161,7 @@ func (client *ManageClient) uploadNodeResource(nodeResource *protoManage.NodeRes
 	return err
 }
 
-func (client *ManageClient) downloadNodeResource(nodeResource *protoManage.NodeResource, write io.Writer) error {
+func (client *Client) downloadNodeResource(nodeResource *protoManage.NodeResource, write io.Writer) error {
 	download, err := client.engine.DownloadNodeResource(context.Background(),
 		&protoManage.ReqNodeResourceDownload{NodeResource: *nodeResource})
 	if err != nil {
@@ -151,7 +175,10 @@ func (client *ManageClient) downloadNodeResource(nodeResource *protoManage.NodeR
 			}
 			return err
 		}
-		write.Write(req.Data)
+		_, err = write.Write(req.Data)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

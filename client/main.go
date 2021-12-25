@@ -1,7 +1,18 @@
-// Copyright 2021 The Authors. All rights reserved.
-// Author: liyiligang
-// Date: 2021/06/18 10:37
-// Description: manage client
+/*
+ * Copyright 2021 liyiligang.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package main
 
@@ -12,14 +23,15 @@ import (
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
 	"github.com/liyiligang/base/component/Jtool"
-	"github.com/liyiligang/klee-client-go/klee"
-	"github.com/liyiligang/klee-client-go/klee/typedef"
-	"github.com/liyiligang/klee-client-go/protoFiles/protoManage"
+	"github.com/liyiligang/mxrpc-go-client/mxrpc"
+	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxrpc-go-client/typedef"
+	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
 	"math/rand"
 	"time"
 )
 
-var manageClient *klee.ManageClient
+var manageClient *mxrpc.Client
 
 type TestNode struct {
 	Node 		int 		`jsonschema:"title=节点ID,default=1"`
@@ -45,8 +57,8 @@ type TestJsonExtras struct {
 
 type FileUpload struct {
 	Name     	 string    		`json:"name,omitempty" schema:"title=姓名,default="`
-	File     	 string    		`json:"file,omitempty" schema:"title=文件上传" ui:"{\"ui:widget\":\"UploadWidget\",\"ui:btnText\":\"上传文件\"}"`
-	FileList     []string    	`schema:"title=文件批量上传" ui:"{\"ui:widget\":\"UploadWidget\",\"ui:btnText\":\"批量上传文件\"}"`
+	File     	 string    		`json:"file,omitempty" schema:"title=文件上传" ui:"{\"ui:widget\":\"UploadFile\",\"ui:btnText\":\"上传文件\"}"`
+	FileList     []string    	`schema:"title=文件批量上传" ui:"{\"ui:widget\":\"UploadFile\",\"ui:btnText\":\"批量上传文件\"}"`
 }
 
 func main() {
@@ -62,182 +74,182 @@ func main() {
 	}
 
 	//node func
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "文本测试",
 		CallFunc: testRectFunc1,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:    constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "Json测试",
 		CallFunc: testRectFunc2,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:    constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "链接测试",
 		CallFunc: testRectFunc3,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:    constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "媒体测试",
 		CallFunc: testRectFunc4,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:   constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "文件测试",
 		CallFunc: testRectFunc5,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:   constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "表格测试",
 		CallFunc: testRectFunc6,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:   constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "图表测试",
 		CallFunc: testRectFunc7,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:   constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "动态返回值测试",
 		CallFunc: testRectFunc8,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:   constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "错误测试",
 		CallFunc: testRectFunc9,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:   constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "无值",
 		CallFunc: testRectFunc10,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:   constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "图片测试",
 		CallFunc: testRectFunc11,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:   constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "多参数多返回值测试",
 		CallFunc: testRectFunc12,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:   constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "文件上传",
 		CallFunc: testRectFunc13,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:   constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeFunc(klee.NodeFuncRegister{
+	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
 		Name:     "通用json测试",
 		CallFunc: testRectFunc14,
-		Level:    klee.NodeFuncLevelSuperManager,
+		Level:   constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	//node report
-	err = manageClient.RegisterNodeReport(klee.NodeReportRegister{
+	err = manageClient.RegisterNodeReport(mxrpc.NodeReportRegister{
 		Name: "表格报告",
 		Type: protoManage.NodeReportType_NodeReportTypeTable,
 		CallFunc: testReport1,
 		CallInterval:time.Second*2,
-		Schema:klee.NodeReportSchema{
-			CategoryList:[]klee.NodeReportCategory{
-				klee.NodeReportCategory{
+		Schema: mxrpc.NodeReportSchema{
+			CategoryList:[]mxrpc.NodeReportCategory{
+				mxrpc.NodeReportCategory{
 					Name: "阳光城",
 					Width: 100,
 				},
-				klee.NodeReportCategory{
+				mxrpc.NodeReportCategory{
 					Name: "麓谷",
 					Width: 100,
 				},
-				klee.NodeReportCategory{
+				mxrpc.NodeReportCategory{
 					Name: "梅溪湖",
 					Width: 100,
 				},
 			},
 		},
-		Level:klee.NodeReportLevelSuperManager,
+		Level: constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = manageClient.RegisterNodeReport(klee.NodeReportRegister{
+	err = manageClient.RegisterNodeReport(mxrpc.NodeReportRegister{
 		Name: "折线报告",
 		Type: protoManage.NodeReportType_NodeReportTypeLine,
 		CallFunc: testReport2,
 		CallInterval:time.Second*2,
-		Schema:klee.NodeReportSchema{
-			CategoryList:[]klee.NodeReportCategory{
-				klee.NodeReportCategory{
+		Schema: mxrpc.NodeReportSchema{
+			CategoryList:[]mxrpc.NodeReportCategory{
+				mxrpc.NodeReportCategory{
 					Name: "阳光城",
 					Width: 100,
 				},
-				klee.NodeReportCategory{
+				mxrpc.NodeReportCategory{
 					Name: "麓谷",
 					Width: 100,
 				},
-				klee.NodeReportCategory{
+				mxrpc.NodeReportCategory{
 					Name: "梅溪湖",
 					Width: 100,
 				},
 			},
 		},
-		Level:klee.NodeReportLevelSuperManager,
+		Level: constant.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -256,13 +268,11 @@ func main() {
 }
 
 
-func initClient() (*klee.ManageClient, error) {
-	c, err := klee.InitManageClient(klee.ManageClientConfig{
+func initClient() (*mxrpc.Client, error) {
+	c, err := mxrpc.InitManageClient(mxrpc.ClientConfig{
 		Addr:":888",
 		PublicKeyPath:"../store/cert/grpc/ca_cert.pem",
 		CertName: "x.test.example.com",
-		NodeGroupName: "TestGroup",
-		NodeTypeName: "TestType",
 		NodeName: "TestNode",
 		ConnectTimeOut: time.Second * 5,
 		RequestTimeOut: time.Second * 5,
@@ -307,7 +317,7 @@ func testRectFunc5(str *TestUser) typedef.NodeFuncReturnFile {
 	//defer f.Close()
 	//data, _ := ioutil.ReadAll(f)
 
-	aa := typedef.NodeFuncReturnFile{Name: "文件测试", Data: []byte("测试文本"), AutoSave: str.Sex}
+	aa := typedef.NodeFuncReturnFile{Name: "文件测试", URL: "测试文本", AutoSave: str.Sex}
 	return aa
 }
 
@@ -468,17 +478,17 @@ func testRectFunc14(str *TestJsonExtras) string {
 }
 
 var testVal1 = 0.0
-func testReport1() (*typedef.NodeReportData, error) {
+func testReport1() (*mxrpc.NodeReportData, error) {
 	testVal1 += 1
-	return &typedef.NodeReportData{ValueList:[]typedef.NodeReportVal{
-		typedef.NodeReportVal{
+	return &mxrpc.NodeReportData{ValueList:[]mxrpc.NodeReportVal{
+		mxrpc.NodeReportVal{
 			Value: testVal1+0.12,
 		},
-		typedef.NodeReportVal{
+		mxrpc.NodeReportVal{
 			Value: testVal1+1,
 			State: protoManage.State_StateError,
 		},
-		typedef.NodeReportVal{
+		mxrpc.NodeReportVal{
 			Value: testVal1*2,
 			State: protoManage.State_StateNormal,
 		},
@@ -488,7 +498,7 @@ func testReport1() (*typedef.NodeReportData, error) {
 var testVal2 = 5000
 var testVal22 = 0
 var testVal33 = 100
-func testReport2() (*typedef.NodeReportData, error) {
+func testReport2() (*mxrpc.NodeReportData, error) {
 	r1, _ := Jtool.GetRandInt(1, 10000)
 
 	if testVal22 > 10000 {
@@ -518,16 +528,16 @@ func testReport2() (*typedef.NodeReportData, error) {
 		state2 = protoManage.State_StateUnknow
 	}
 
-	return &typedef.NodeReportData{ValueList:[]typedef.NodeReportVal{
-		typedef.NodeReportVal{
+	return &mxrpc.NodeReportData{ValueList:[]mxrpc.NodeReportVal{
+		mxrpc.NodeReportVal{
 			Value: testVal2,
 		},
 
-		typedef.NodeReportVal{
+		mxrpc.NodeReportVal{
 			Value: r1,
 			State: state1,
 		},
-		typedef.NodeReportVal{
+		mxrpc.NodeReportVal{
 			Value: testVal22,
 			State: state2,
 		},
@@ -568,7 +578,7 @@ func testNotify()  {
 		for  {
 			r1, _ := Jtool.GetRandInt(1, 4)
 			r2 := Jtool.GetRandChinese(5, 20)
-			err := manageClient.SendNodeNotify(r2, klee.NodeNotifyLevel(r1), false)
+			err := manageClient.SendNodeNotify(r2, constant.NodeNotifyLevel(r1), false)
 			if err != nil {
 				fmt.Println(err)
 			}

@@ -56,22 +56,17 @@ func (client *Client) RpcStreamConnected(stream *Jrpc.RpcStream) error {
 	return nil
 }
 
-func (client *Client) RpcStreamClosed(stream *Jrpc.RpcStream) {
+func (client *Client) RpcStreamClosed(stream *Jrpc.RpcStream) error {
 	client.setRpcStream(nil)
+	return nil
 }
 
-func (client *Client) RpcStreamReceiver(stream *Jrpc.RpcStream, recv interface{}) {
-	var err error
-	defer func(){
-		if err != nil {
-			client.RpcStreamError("rpc receiver error", err)
-		}
-	}()
+func (client *Client) RpcStreamReceiver(stream *Jrpc.RpcStream, recv interface{}) error {
 	res, ok := recv.(*protoManage.Message)
 	if !ok {
-		err = errors.New("recv assert fail with *protoManage.Message")
-		return
+		return errors.New("recv assert fail with *protoManage.Message")
 	}
+	var err error
 	switch res.Order {
 	case protoManage.Order_NodeFuncCallReq:
 		err = client.reqNodeFuncCall(res.Message)
@@ -80,8 +75,9 @@ func (client *Client) RpcStreamReceiver(stream *Jrpc.RpcStream, recv interface{}
 		err = client.reqNodeNotify(res.Message)
 		break
 	default:
-		err = errors.New("rpc order is not found with number " +  Jtool.Int64ToString(int64(res.Order)))
+		err = errors.New("rpc order is invalid with number " +  Jtool.Int64ToString(int64(res.Order)))
 	}
+	return err
 }
 
 func (client *Client) RpcStreamError(text string, err error) {

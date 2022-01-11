@@ -317,7 +317,7 @@ func testRectFunc5(str *TestUser) typedef.NodeFuncReturnFile {
 	//defer f.Close()
 	//data, _ := ioutil.ReadAll(f)
 
-	aa := typedef.NodeFuncReturnFile{Name: "文件测试", URL: "测试文本", AutoSave: str.Sex}
+	aa := typedef.NodeFuncReturnFile{Name: "文件测试", ID: 1}
 	return aa
 }
 
@@ -469,8 +469,12 @@ func testRectFunc12(str *TestUser) (int, int, string, bool, error) {
 	}
 }
 
-func testRectFunc13(file *FileUpload) string {
-	return file.File
+func testRectFunc13(file *FileUpload) typedef.NodeFuncReturnFile {
+	//manageClient.DownloadNodeResourceWithFile(file.File, "C:\\Users\\49341\\Desktop\\新建文件夹\\")
+	n ,_ := manageClient.UploadNodeResourceWithBytes("kk", []byte("SAdsad"))
+	return typedef.NodeFuncReturnFile{Name: "aa.txt", ID: n.Base.ID}
+
+	//return file.File
 }
 
 func testRectFunc14(str *TestJsonExtras) string {

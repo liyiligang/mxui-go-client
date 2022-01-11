@@ -76,8 +76,7 @@ cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error{
 
 func (client *Client) rpcStreamInterceptor (ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn,
 	method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ctxTimeOut, _ := context.WithTimeout(ctx, client.config.RequestTimeOut)
-	return streamer(ctxTimeOut, desc, cc, method, opts...)
+	return streamer(ctx, desc, cc, method, opts...)
 }
 
 func (client *Client) closeConn() {

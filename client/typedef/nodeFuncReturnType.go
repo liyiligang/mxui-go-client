@@ -29,7 +29,6 @@ type NodeFuncReturnJson struct {
 type NodeFuncReturnLink struct {
 	Name        	string
 	Link 			string
-	AutoOpen		bool
 	Blank			bool
 }
 
@@ -43,13 +42,11 @@ type NodeFuncReturnMedia struct {
 	Type 	    	string
 	Live			bool
 	Loop			bool
-	AutoPlay		bool
 }
 
 type NodeFuncReturnFile struct {
 	Name        	string
-	URL 			string
-	AutoSave		bool
+	ID 				int64
 }
 
 type NodeFuncReturnCharts struct {

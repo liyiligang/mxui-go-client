@@ -30,6 +30,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func (client *Client) CheckNodeResourceWithFile(filePath string) (*protoManage.NodeResource, error){
@@ -53,29 +54,13 @@ func (client *Client) CheckNodeResourceWithFile(filePath string) (*protoManage.N
 		return nil, err
 	}
 	md5str := hex.EncodeToString(md.Sum(nil))
-	req := &protoManage.NodeResource{
-		UUID: md5str + "_" + fileName,
-		Name: fileName,
-		Md5: md5str,
-		Sizes: fileInfo.Size(),
-		Type: protoManage.NodeResourceType_NodeResourceTypeCache,
-	}
-	ctx, _ := context.WithTimeout(context.Background(), client.config.RequestTimeOut)
-	return client.engine.CheckNodeResource(ctx, req)
+	return client.checkNodeResource(fileName, md5str, fileInfo.Size())
 }
 
 func (client *Client) CheckNodeResourceWithByte(name string, data []byte) (*protoManage.NodeResource, error){
 	md := md5.Sum(data)
 	md5str := fmt.Sprintf("%x", md)
-	req := &protoManage.NodeResource{
-		UUID: md5str + "_" + name,
-		Name: name,
-		Md5: md5str,
-		Sizes: int64(len(data)),
-		Type: protoManage.NodeResourceType_NodeResourceTypeCache,
-	}
-	ctx, _ := context.WithTimeout(context.Background(), client.config.RequestTimeOut)
-	return client.engine.CheckNodeResource(ctx, req)
+	return client.checkNodeResource(name, md5str, int64(len(data)))
 }
 
 
@@ -84,7 +69,7 @@ func (client *Client) UploadNodeResourceWithFile(filePath string) (*protoManage.
 	if err != nil {
 		return nil, err
 	}
-	if !nodeResource.IsExist {
+	if nodeResource.Base.ID == 0 {
 		file, err := os.Open(filePath)
 		if err != nil {
 			return nil, err
@@ -108,7 +93,7 @@ func (client *Client) UploadNodeResourceWithBytes(name string, data []byte) (*pr
 	if err != nil {
 		return nil, err
 	}
-	if !nodeResource.IsExist {
+	if nodeResource.Base.ID == 0 {
 		buffer := bytes.NewBuffer(data)
 		err = client.uploadNodeResource(nodeResource, buffer)
 		if err != nil {
@@ -118,9 +103,11 @@ func (client *Client) UploadNodeResourceWithBytes(name string, data []byte) (*pr
 	return nodeResource, nil
 }
 
-func (client *Client) DownloadNodeResourceWithFile(fileName string, fileDir string) (uErr error) {
-	filePath := fileDir + fileName
-	file, err := os.Create(filePath)
+func (client *Client) DownloadNodeResourceWithFile(url string, filePath string) (uErr error) {
+	idStr := strings.Split(url, "_")
+	id := Jtool.StringToInt64(idStr[0])
+	name := idStr[1]
+	file, err := os.Create(filePath + name)
 	if err != nil {
 		return err
 	}
@@ -130,16 +117,36 @@ func (client *Client) DownloadNodeResourceWithFile(fileName string, fileDir stri
 			_ = os.Remove(filePath)
 		}
 	}()
-	return client.downloadNodeResource(&protoManage.NodeResource{UUID: fileName}, file)
+	return client.downloadNodeResource(id, file)
 }
 
-func (client *Client) DownloadNodeResourceWithBytes(fileName string) ([]byte, error) {
+func (client *Client) DownloadNodeResourceWithBytes(url string) (string, []byte, error) {
+	idStr := strings.Split(url, "_")
+	id := Jtool.StringToInt64(idStr[0])
+	name := idStr[1]
 	buffer := bytes.NewBuffer(nil)
-	err := client.downloadNodeResource(&protoManage.NodeResource{UUID: fileName}, buffer)
+	err := client.downloadNodeResource(id, buffer)
+	if err != nil {
+		return "", nil, err
+	}
+	return name, buffer.Bytes(), nil
+}
+
+func (client *Client) checkNodeResource(name string, md5 string, size int64) (*protoManage.NodeResource, error) {
+	node, err := client.getNode()
 	if err != nil {
 		return nil, err
 	}
-	return buffer.Bytes(), nil
+	req := &protoManage.NodeResource{
+		UploaderID:node.Base.ID,
+		UploaderType: protoManage.NotifySenderType_NotifySenderTypeNode,
+		Name: name,
+		Md5: md5,
+		Sizes: size,
+		Type: protoManage.NodeResourceType_NodeResourceTypeCache,
+	}
+	ctx, _ := context.WithTimeout(context.Background(), client.config.RequestTimeOut)
+	return client.engine.CheckNodeResource(ctx, req)
 }
 
 func (client *Client) uploadNodeResource(nodeResource *protoManage.NodeResource, read io.Reader) error {
@@ -161,9 +168,14 @@ func (client *Client) uploadNodeResource(nodeResource *protoManage.NodeResource,
 	return err
 }
 
-func (client *Client) downloadNodeResource(nodeResource *protoManage.NodeResource, write io.Writer) error {
+func (client *Client) downloadNodeResource(id int64, write io.Writer) error {
+
 	download, err := client.engine.DownloadNodeResource(context.Background(),
-		&protoManage.ReqNodeResourceDownload{NodeResource: *nodeResource})
+		&protoManage.ReqNodeResourceDownload{NodeResource: protoManage.NodeResource{
+			Base: protoManage.Base{
+				ID:  id,
+			},
+		}})
 	if err != nil {
 		return err
 	}

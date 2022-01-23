@@ -23,8 +23,10 @@ import (
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
 	"github.com/liyiligang/base/component/Jtool"
+	"github.com/liyiligang/mxrpc-go-client/example"
 	"github.com/liyiligang/mxrpc-go-client/mxrpc"
 	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxrpc-go-client/schema"
 	"github.com/liyiligang/mxrpc-go-client/typedef"
 	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
 	"math/rand"
@@ -69,200 +71,202 @@ func main() {
 	var err error
 	manageClient, err = initClient()
 	if err !=nil {
-		fmt.Println("link error: ", err)
+		fmt.Println("server link error: ", err)
 		return
 	}
 
-	//node func
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "文本测试",
-		CallFunc: testRectFunc1,
-		Level:    constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
+	example.LoadExampleMethod(manageClient)
 
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "Json测试",
-		CallFunc: testRectFunc2,
-		Level:    constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "链接测试",
-		CallFunc: testRectFunc3,
-		Level:    constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "媒体测试",
-		CallFunc: testRectFunc4,
-		Level:   constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "文件测试",
-		CallFunc: testRectFunc5,
-		Level:   constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "表格测试",
-		CallFunc: testRectFunc6,
-		Level:   constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "图表测试",
-		CallFunc: testRectFunc7,
-		Level:   constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "动态返回值测试",
-		CallFunc: testRectFunc8,
-		Level:   constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "错误测试",
-		CallFunc: testRectFunc9,
-		Level:   constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "无值",
-		CallFunc: testRectFunc10,
-		Level:   constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "图片测试",
-		CallFunc: testRectFunc11,
-		Level:   constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "多参数多返回值测试",
-		CallFunc: testRectFunc12,
-		Level:   constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "文件上传",
-		CallFunc: testRectFunc13,
-		Level:   constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
-		Name:     "通用json测试",
-		CallFunc: testRectFunc14,
-		Level:   constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	//node report
-	err = manageClient.RegisterNodeReport(mxrpc.NodeReportRegister{
-		Name: "表格报告",
-		Type: protoManage.NodeReportType_NodeReportTypeTable,
-		CallFunc: testReport1,
-		CallInterval:time.Second*2,
-		Schema: mxrpc.NodeReportSchema{
-			CategoryList:[]mxrpc.NodeReportCategory{
-				mxrpc.NodeReportCategory{
-					Name: "阳光城",
-					Width: 100,
-				},
-				mxrpc.NodeReportCategory{
-					Name: "麓谷",
-					Width: 100,
-				},
-				mxrpc.NodeReportCategory{
-					Name: "梅溪湖",
-					Width: 100,
-				},
-			},
-		},
-		Level: constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = manageClient.RegisterNodeReport(mxrpc.NodeReportRegister{
-		Name: "折线报告",
-		Type: protoManage.NodeReportType_NodeReportTypeLine,
-		CallFunc: testReport2,
-		CallInterval:time.Second*2,
-		Schema: mxrpc.NodeReportSchema{
-			CategoryList:[]mxrpc.NodeReportCategory{
-				mxrpc.NodeReportCategory{
-					Name: "阳光城",
-					Width: 100,
-				},
-				mxrpc.NodeReportCategory{
-					Name: "麓谷",
-					Width: 100,
-				},
-				mxrpc.NodeReportCategory{
-					Name: "梅溪湖",
-					Width: 100,
-				},
-			},
-		},
-		Level: constant.UserLevelLevelManager,
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	////node report manual update
-	//err = manageClient.UpdateReportVal("testReport", 1, klee.NodeReportValLevelNormal)
+	////node func
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "文本测试",
+	//	CallFunc: testRectFunc1,
+	//	Level:    constant.UserLevelLevelManager,
+	//})
 	//if err != nil {
 	//	fmt.Println(err)
 	//}
 	//
-	//node notify
-	testNotify()
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "Json测试",
+	//	CallFunc: testRectFunc2,
+	//	Level:    constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "链接测试",
+	//	CallFunc: testRectFunc3,
+	//	Level:    constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "媒体测试",
+	//	CallFunc: testRectFunc4,
+	//	Level:   constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "文件测试",
+	//	CallFunc: testRectFunc5,
+	//	Level:   constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "表格测试",
+	//	CallFunc: testRectFunc6,
+	//	Level:   constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "图表测试",
+	//	CallFunc: testRectFunc7,
+	//	Level:   constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "动态返回值测试",
+	//	CallFunc: testRectFunc8,
+	//	Level:   constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "错误测试",
+	//	CallFunc: testRectFunc9,
+	//	Level:   constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "无值",
+	//	CallFunc: testRectFunc10,
+	//	Level:   constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "图片测试",
+	//	CallFunc: testRectFunc11,
+	//	Level:   constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "多参数多返回值测试",
+	//	CallFunc: testRectFunc12,
+	//	Level:   constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "文件上传",
+	//	CallFunc: testRectFunc13,
+	//	Level:   constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeFunc(mxrpc.NodeFuncRegister{
+	//	Name:     "通用json测试",
+	//	CallFunc: testRectFunc14,
+	//	Level:   constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	////node report
+	//err = manageClient.RegisterNodeReport(mxrpc.NodeReportRegister{
+	//	Name: "表格报告",
+	//	Type: protoManage.NodeReportType_NodeReportTypeTable,
+	//	CallFunc: testReport1,
+	//	CallInterval:time.Second*2,
+	//	Schema: mxrpc.NodeReportSchema{
+	//		CategoryList:[]mxrpc.NodeReportCategory{
+	//			mxrpc.NodeReportCategory{
+	//				Name: "阳光城",
+	//				Width: 100,
+	//			},
+	//			mxrpc.NodeReportCategory{
+	//				Name: "麓谷",
+	//				Width: 100,
+	//			},
+	//			mxrpc.NodeReportCategory{
+	//				Name: "梅溪湖",
+	//				Width: 100,
+	//			},
+	//		},
+	//	},
+	//	Level: constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = manageClient.RegisterNodeReport(mxrpc.NodeReportRegister{
+	//	Name: "折线报告",
+	//	Type: protoManage.NodeReportType_NodeReportTypeLine,
+	//	CallFunc: testReport2,
+	//	CallInterval:time.Second*2,
+	//	Schema: mxrpc.NodeReportSchema{
+	//		CategoryList:[]mxrpc.NodeReportCategory{
+	//			mxrpc.NodeReportCategory{
+	//				Name: "阳光城",
+	//				Width: 100,
+	//			},
+	//			mxrpc.NodeReportCategory{
+	//				Name: "麓谷",
+	//				Width: 100,
+	//			},
+	//			mxrpc.NodeReportCategory{
+	//				Name: "梅溪湖",
+	//				Width: 100,
+	//			},
+	//		},
+	//	},
+	//	Level: constant.UserLevelLevelManager,
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//////node report manual update
+	////err = manageClient.UpdateReportVal("testReport", 1, klee.NodeReportValLevelNormal)
+	////if err != nil {
+	////	fmt.Println(err)
+	////}
+	////
+	////node notify
+	//testNotify()
 
 	select {}
 }
@@ -281,6 +285,9 @@ func initClient() (*mxrpc.Client, error) {
 	})
 	if err != nil {
 		return nil, err
+	}
+	c.FuncSchema = &schema.Reflector{
+		RequiredFromJSONSchemaTags:true,
 	}
 	return c, nil
 }

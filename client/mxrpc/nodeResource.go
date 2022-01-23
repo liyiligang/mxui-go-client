@@ -104,6 +104,12 @@ func (client *Client) UploadNodeResourceWithBytes(name string, data []byte) (*pr
 }
 
 func (client *Client) DownloadNodeResourceWithFile(url string, filePath string) (uErr error) {
+	if url == "" {
+		return errors.New("download url must not be empty")
+	}
+	if filePath == "" {
+		return errors.New("download file Path must not be empty")
+	}
 	idStr := strings.Split(url, "_")
 	id := Jtool.StringToInt64(idStr[0])
 	name := idStr[1]
@@ -121,6 +127,9 @@ func (client *Client) DownloadNodeResourceWithFile(url string, filePath string) 
 }
 
 func (client *Client) DownloadNodeResourceWithBytes(url string) (string, []byte, error) {
+	if url == "" {
+		return "", nil, errors.New("download url must not be empty")
+	}
 	idStr := strings.Split(url, "_")
 	id := Jtool.StringToInt64(idStr[0])
 	name := idStr[1]

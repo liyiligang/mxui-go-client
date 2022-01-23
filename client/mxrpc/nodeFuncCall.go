@@ -34,8 +34,9 @@ func (client *Client) reqNodeFuncCall(message []byte) error {
 	err = client.nodeFuncCall(&req)
 	if err != nil  {
 		ans := protoManage.AnsNodeFuncCall{Error: err.Error(), NodeFuncCall: protoManage.NodeFuncCall{
-			Base: req.NodeFuncCall.Base, State: protoManage.State_StateError, ManagerID: req.NodeFuncCall.ManagerID,
-			FuncID: req.NodeFuncCall.FuncID, ReturnVal: err.Error(), ReturnType: protoManage.NodeFuncReturnType_Error,
+			Base: req.NodeFuncCall.Base, State: protoManage.State_StateError, RequesterID: req.NodeFuncCall.RequesterID,
+			RequesterName: req.NodeFuncCall.RequesterName, FuncID: req.NodeFuncCall.FuncID,
+			ReturnVal: err.Error(), ReturnType: protoManage.NodeFuncReturnType_Error,
 		}}
 		return client.sendPB(protoManage.Order_NodeFuncCallAns, &ans)
 	}
@@ -81,7 +82,8 @@ func (client *Client) nodeFuncCall(req *protoManage.ReqNodeFuncCall) error {
 	ans := protoManage.AnsNodeFuncCall{NodeFuncCall: protoManage.NodeFuncCall{
 		Base: req.NodeFuncCall.Base, Parameter: req.NodeFuncCall.Parameter,
 		ReturnVal: string(data), ReturnType: returnType, State: protoManage.State_StateNormal,
-		ManagerID: req.NodeFuncCall.ManagerID, FuncID: req.NodeFuncCall.FuncID,
+		RequesterID: req.NodeFuncCall.RequesterID, RequesterName: req.NodeFuncCall.RequesterName,
+		FuncID: req.NodeFuncCall.FuncID,
 	}}
 	return client.sendPB(protoManage.Order_NodeFuncCallAns, &ans)
 }

@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	"github.com/liyiligang/base/component/Jtool"
-	"github.com/liyiligang/mxrpc-go-client/jsonSchema"
 	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
 	"github.com/liyiligang/mxrpc-go-client/typedef"
 	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
@@ -97,8 +96,8 @@ func (client *Client) nodeFuncRegisterCheck(callFunc interface{}) error {
 }
 
 func (client *Client) getNodeFuncJsonSchema(rType reflect.Type) (string, error) {
-	schema := jsonSchema.ReflectFromType(rType)
-	bytes, err := schema.MarshalJSON()
+	funcSchema := client.FuncSchema.ReflectFromType(rType)
+	bytes, err := funcSchema.MarshalJSON()
 	return string(bytes), err
 }
 

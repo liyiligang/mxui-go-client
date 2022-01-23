@@ -4,7 +4,7 @@
 // property names and if a property is required (omitempty is present).
 //
 // [1] http://json-schema.org/latest/json-schema-validation.html
-package jsonSchema
+package schema
 
 import (
 	"encoding/json"
@@ -455,6 +455,8 @@ func (t *Type) structKeywordsFromTags(f reflect.StructField, parentType *Type, p
 	switch t.Type {
 	case "string":
 		t.stringKeywords(tags)
+	case "boolean":
+		t.booleanKeywords(tags)
 	case "number":
 		t.numbericKeywords(tags)
 	case "integer":
@@ -465,7 +467,12 @@ func (t *Type) structKeywordsFromTags(f reflect.StructField, parentType *Type, p
 
 	ui := f.Tag.Get("ui")
 	if ui != "" {
-		t.setExtra("ui", ui)
+		jsonStr := strings.ReplaceAll(ui, "'", "\"")
+		isJson := json.Valid([]byte(jsonStr))
+		if !isJson {
+			panic("the tag ui of the field "+ propertyName + " is wrong format with " + ui)
+		}
+		t.setExtra("ui", jsonStr)
 	}
 }
 
@@ -520,18 +527,12 @@ func (t *Type) genericKeywords(tags []string, parentType *Type, propertyName str
 					case "number":
 						f, _ := strconv.ParseFloat(val, 64)
 						t.Enum = append(t.Enum, f)
+					case "boolean":
+						f, _ := strconv.ParseBool(val)
+						t.Enum = append(t.Enum, f)
 					}
 				case "enumNames":
-					switch t.Type {
-					case "string":
-						t.EnumNames = append(t.EnumNames, val)
-					case "integer":
-						i, _ := strconv.Atoi(val)
-						t.EnumNames = append(t.EnumNames, i)
-					case "number":
-						f, _ := strconv.ParseFloat(val, 64)
-						t.EnumNames = append(t.EnumNames, f)
-					}
+					t.EnumNames = append(t.EnumNames, val)
 				}
 			}
 		}
@@ -557,7 +558,7 @@ func (t *Type) stringKeywords(tags []string) {
 					t.Pattern = val
 				case "format":
 					switch val {
-					case "date-time", "email", "hostname", "ipv4", "ipv6", "uri":
+					case "date", "time", "date-time", "email", "hostname", "ipv4", "ipv6", "uri":
 						t.Format = val
 						break
 					}
@@ -565,6 +566,27 @@ func (t *Type) stringKeywords(tags []string) {
 					t.Default = val
 				case "example":
 					t.Examples = append(t.Examples, val)
+				}
+			}
+		}
+	}
+}
+
+// read struct tags for boolean type keyworks
+func (t *Type) booleanKeywords(tags []string) {
+	for _, tag := range tags {
+		nameValue := strings.Split(tag, "=")
+		if len(nameValue) == 2 {
+			name, value := nameValue[0], nameValue[1]
+			valList := strings.Split(value, ";")
+			for _, val := range valList {
+				switch name {
+				case "default":
+					if val == "true"{
+						t.Default = true
+					}else{
+						t.Default = false
+					}
 				}
 			}
 		}
@@ -595,9 +617,20 @@ func (t *Type) numbericKeywords(tags []string) {
 				case "exclusiveMinimum":
 					b, _ := strconv.ParseBool(val)
 					t.ExclusiveMinimum = b
+				case "format":
+					switch val {
+					case "date", "date-time":
+						t.Format = val
+						break
+					}
 				case "default":
-					i, _ := strconv.Atoi(val)
-					t.Default = i
+					i, err := strconv.Atoi(val)
+					if err == nil {
+						t.Default = i
+					}else{
+						f, _ := strconv.ParseFloat(val, 64)
+						t.Default = f
+					}
 				case "example":
 					if i, err := strconv.Atoi(val); err == nil {
 						t.Examples = append(t.Examples, i)
@@ -642,8 +675,26 @@ func (t *Type) arrayKeywords(tags []string) {
 					t.MaxItems = i
 				case "uniqueItems":
 					t.UniqueItems = true
+				case "format":
+					switch val {
+					case "date", "date-time":
+						t.Format = val
+						break
+					}
 				case "default":
-					defaultValues = append(defaultValues, val)
+					switch t.Items.Type {
+					case "string":
+						defaultValues = append(defaultValues, val)
+					case "integer":
+						i, _ := strconv.Atoi(val)
+						defaultValues = append(defaultValues, i)
+					case "number":
+						f, _ := strconv.ParseFloat(val, 64)
+						defaultValues = append(defaultValues, f)
+					case "boolean":
+						b, _ := strconv.ParseBool(val)
+						defaultValues = append(defaultValues, b)
+					}
 				case "enum":
 					switch t.Items.Type {
 					case "string":
@@ -654,18 +705,12 @@ func (t *Type) arrayKeywords(tags []string) {
 					case "number":
 						f, _ := strconv.ParseFloat(val, 64)
 						t.Items.Enum = append(t.Items.Enum, f)
+					case "boolean":
+						b, _ := strconv.ParseBool(val)
+						t.Items.Enum = append(t.Items.Enum, b)
 					}
 				case "enumNames":
-					switch t.Items.Type {
-					case "string":
-						t.Items.EnumNames = append(t.Items.EnumNames, val)
-					case "integer":
-						i, _ := strconv.Atoi(val)
-						t.Items.EnumNames = append(t.Items.EnumNames, i)
-					case "number":
-						f, _ := strconv.ParseFloat(val, 64)
-						t.Items.EnumNames = append(t.Items.EnumNames, f)
-					}
+					t.Items.EnumNames = append(t.Items.EnumNames, val)
 				}
 			}
 		}

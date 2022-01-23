@@ -19,6 +19,7 @@ package mxrpc
 import (
 	"github.com/liyiligang/base/component/Jrpc"
 	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxrpc-go-client/schema"
 	"google.golang.org/grpc"
 	"sync"
 	"sync/atomic"
@@ -37,12 +38,13 @@ type ClientConfig struct {
 }
 
 type Client struct {
-	config    ClientConfig
-	data      clientData
-	conn      *grpc.ClientConn
-	engine    protoManage.RpcEngineClient
-	stream    atomic.Value
-	keepalive *Jrpc.RpcKeepalive
+	config    	ClientConfig
+	data      	clientData
+	conn      	*grpc.ClientConn
+	engine    	protoManage.RpcEngineClient
+	stream    	atomic.Value
+	FuncSchema	*schema.Reflector
+	keepalive 	*Jrpc.RpcKeepalive
 }
 
 type clientData struct {

@@ -16,7 +16,7 @@
 
 package constant
 
-import "github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
+import "github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
 
 const ConstRpcClientSendBroadcast = -1
 const ConstRpcClientMaxMsgSize = 10*1024*1024

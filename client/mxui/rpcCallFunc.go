@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package mxrpc
+package mxui
 
 import (
 	"errors"
 	"github.com/liyiligang/base/component/Jrpc"
 	"github.com/liyiligang/base/component/Jtool"
-	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
+	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxui-go-client/typedef/constant"
 )
 
 func (client *Client) RpcServeConnected(rpcKeepalive *Jrpc.RpcKeepalive, isReConnect bool) {

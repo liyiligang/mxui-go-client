@@ -1,4 +1,4 @@
-module github.com/liyiligang/mxrpc-go-client
+module github.com/liyiligang/mxui-go-client
 
 go 1.15
 

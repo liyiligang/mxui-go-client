@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package mxrpc
+package mxui
 
 import (
 	"encoding/json"
 	"errors"
-	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxrpc-go-client/typedef"
+	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
 	"reflect"
 )
 
@@ -122,9 +121,9 @@ func (client *Client) callFuncByReflect(nodeFunc *NodeFuncRegister, nodeFuncPara
 
 func (client *Client) packageBaseType(returnType protoManage.NodeFuncReturnType, val interface{}) interface{}{
 	if returnType == protoManage.NodeFuncReturnType_Text {
-		val = &typedef.NodeFuncReturnText{Data: val}
+		val = &NodeFuncReturnText{Data: val}
 	}else if returnType == protoManage.NodeFuncReturnType_Json {
-		val = &typedef.NodeFuncReturnJson{Data: val}
+		val = &NodeFuncReturnJson{Data: val}
 	}
 	return val
 }

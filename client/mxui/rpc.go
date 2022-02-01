@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package mxrpc
+package mxui
 
 import (
 	"context"
 	"github.com/liyiligang/base/component/Jrpc"
-	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
+	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxui-go-client/schema"
+	"github.com/liyiligang/mxui-go-client/typedef/constant"
 	"google.golang.org/grpc"
 )
 
@@ -60,6 +61,9 @@ func InitManageClient(config ClientConfig) (*Client, error) {
 	err = Jrpc.RegisterRpcKeepalive(client.keepalive, client)
 	if err != nil {
 		return nil, err
+	}
+	client.FuncSchema = &schema.Reflector{
+		RequiredFromJSONSchemaTags:true,
 	}
 	return client, nil
 }

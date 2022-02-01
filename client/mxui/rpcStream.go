@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package mxrpc
+package mxui
 
 import (
 	"errors"
 	"github.com/golang/protobuf/proto"
 	"github.com/liyiligang/base/component/Jrpc"
-	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
 	"google.golang.org/grpc"
 )
 

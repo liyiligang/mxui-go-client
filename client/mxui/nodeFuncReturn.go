@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package typedef
+package mxui
 
-import "github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
+import "github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
 
 type NodeFuncReturnText struct {
 	Data 			interface{}
@@ -56,8 +56,8 @@ type NodeFuncReturnCharts struct {
 type NodeFuncReturnTable struct {
 	Stripe			bool
 	Border			bool
+	IndexCol		NodeFuncReturnTableCol
 	ShowSummary     bool
-	ShowIndex		bool
 	SumText			string
 	Col        		[]NodeFuncReturnTableCol
 	Row				[]NodeFuncReturnTableRow
@@ -66,7 +66,6 @@ type NodeFuncReturnTable struct {
 type NodeFuncReturnTableCol struct {
 	Name        	string
 	Width			uint32
-	Type            string
 	Fixed			string
 	Align			string
 	Resizable		bool
@@ -74,9 +73,21 @@ type NodeFuncReturnTableCol struct {
 }
 
 type NodeFuncReturnTableRow struct {
-	Data			[]interface{}
-	State			protoManage.State
+	Value			[]interface{}
 	MergeSameRow	bool
+}
+
+type NodeFuncReturnTableVal struct {
+	Data			interface{}
+	State			protoManage.State
+}
+
+func (table *NodeFuncReturnTable) AddTableCol(col NodeFuncReturnTableCol) {
+	table.Col = append(table.Col, col)
+}
+
+func (table *NodeFuncReturnTable) AddTableRow(row NodeFuncReturnTableRow) {
+	table.Row = append(table.Row, row)
 }
 
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package mxrpc
+package mxui
 
 import (
-	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
+	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxui-go-client/typedef/constant"
 )
 
 func (client *Client) SendNodeNotify(msg string, nodeNotifyLevel constant.NodeNotifyLevel, show bool) error {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mxrpc
+package mxui
 
 import (
 	"bytes"
@@ -25,8 +25,8 @@ import (
 	"fmt"
 	"github.com/liyiligang/base/component/Jrpc"
 	"github.com/liyiligang/base/component/Jtool"
-	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
+	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxui-go-client/typedef/constant"
 	"io"
 	"os"
 	"path/filepath"
@@ -173,8 +173,12 @@ func (client *Client) uploadNodeResource(nodeResource *protoManage.NodeResource,
 	if err != nil {
 		return err
 	}
-	_, err = upload.CloseAndRecv()
-	return err
+	ans, err := upload.CloseAndRecv()
+	if err != nil {
+		return err
+	}
+	*nodeResource = ans.NodeResource
+	return nil
 }
 
 func (client *Client) downloadNodeResource(id int64, write io.Writer) error {

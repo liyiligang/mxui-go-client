@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package mxrpc
+package mxui
 
 import (
 	"encoding/json"
 	"errors"
-	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
+	"reflect"
 )
 
 type NodeReportData struct {
@@ -31,8 +32,8 @@ type NodeReportVal struct {
 	State   		protoManage.State
 }
 
-func (client *Client) execCallReport(nodeReport *protoManage.NodeReport, callFunc NodeReportCallFunc) error{
-	nodeReportData, err := callFunc()
+func (client *Client) execCallReport(report *nodeReportTicker) error{
+	nodeReportData, err := client.callReportByReflect(report)
 	if err != nil {
 		return err
 	}
@@ -40,11 +41,11 @@ func (client *Client) execCallReport(nodeReport *protoManage.NodeReport, callFun
 	if err != nil {
 		return err
 	}
-	nodeReportVal := &protoManage.NodeReportVal{ReportID: nodeReport.Base.ID, Value: val}
+	nodeReportVal := &protoManage.NodeReportVal{ReportID: report.nodeReport.Base.ID, Value: val}
 	return client.sendPB(protoManage.Order_NodeReportUpdateVal, nodeReportVal)
 }
 
-func (client *Client) UpdateReportVal(name string, nodeReportData *NodeReportData) error{
+func (client *Client) UpdateReportVal(name string, nodeReportData interface{}) error{
 	v, ok := client.data.nodeReportMap.Load(name)
 	if !ok {
 		return errors.New("node report name is not found")
@@ -61,7 +62,21 @@ func (client *Client) UpdateReportVal(name string, nodeReportData *NodeReportDat
 	return client.sendPB(protoManage.Order_NodeReportUpdateVal, nodeReportVal)
 }
 
-func (client *Client) getNodeReportDataJson(nodeReportData *NodeReportData) (string, error){
+func (client *Client) callReportByReflect(report *nodeReportTicker) (interface{}, error) {
+	var res []reflect.Value
+	res = report.callFuncValue.Call(report.callFuncPara)
+	var err error
+	ok := false
+	if res[1].Interface() != nil {
+		err, ok = res[1].Interface().(error)
+		if !ok {
+			return nil, errors.New("value assert fail with error")
+		}
+	}
+	return res[0].Interface(), err
+}
+
+func (client *Client) getNodeReportDataJson(nodeReportData interface{}) (string, error){
 	if nodeReportData == nil {
 		return "", errors.New("node report data must not be nil")
 	}

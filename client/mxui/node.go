@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package mxrpc
+package mxui
 
 import (
 	"errors"
-	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
+	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxui-go-client/typedef/constant"
 )
 
 func (client *Client) getNode() (*protoManage.Node, error) {

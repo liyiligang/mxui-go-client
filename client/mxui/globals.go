@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package mxrpc
+package mxui
 
 import (
 	"github.com/liyiligang/base/component/Jrpc"
-	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxrpc-go-client/schema"
+	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxui-go-client/schema"
 	"google.golang.org/grpc"
 	"sync"
 	"sync/atomic"

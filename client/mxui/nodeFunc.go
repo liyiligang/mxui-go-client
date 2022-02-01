@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package mxrpc
+package mxui
 
 import (
 	"context"
 	"errors"
 	"github.com/liyiligang/base/component/Jtool"
-	"github.com/liyiligang/mxrpc-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxrpc-go-client/typedef"
-	"github.com/liyiligang/mxrpc-go-client/typedef/constant"
+	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
+	"github.com/liyiligang/mxui-go-client/typedef/constant"
 	"reflect"
 )
 
@@ -36,7 +35,7 @@ type NodeFuncRegister struct {
 }
 
 func (client *Client) RegisterNodeFunc(nodeFunc NodeFuncRegister) error {
-	err := client.nodeFuncRegisterCheck(nodeFunc.CallFunc)
+	err := client.nodeFuncCallRegisterCheck(nodeFunc.CallFunc)
 	if err != nil {
 		return err
 	}
@@ -72,7 +71,7 @@ func (client *Client) RegisterNodeFunc(nodeFunc NodeFuncRegister) error {
 }
 
 
-func (client *Client) nodeFuncRegisterCheck(callFunc interface{}) error {
+func (client *Client) nodeFuncCallRegisterCheck(callFunc interface{}) error {
 	if callFunc == nil {
 		return errors.New("register function must not be nil")
 	}
@@ -112,21 +111,21 @@ func (client *Client) getNodeFuncReturnType(rType reflect.Type) (protoManage.Nod
 		return protoManage.NodeFuncReturnType_NotReturn, false
 	}
 	switch rType {
-	case reflect.TypeOf(typedef.NodeFuncReturnText{}):
+	case reflect.TypeOf(NodeFuncReturnText{}):
 		return protoManage.NodeFuncReturnType_Text, false
-	case reflect.TypeOf(typedef.NodeFuncReturnJson{}):
+	case reflect.TypeOf(NodeFuncReturnJson{}):
 		return protoManage.NodeFuncReturnType_Json, false
-	case reflect.TypeOf(typedef.NodeFuncReturnLink{}):
+	case reflect.TypeOf(NodeFuncReturnLink{}):
 		return protoManage.NodeFuncReturnType_Link, false
-	case reflect.TypeOf(typedef.NodeFuncReturnImage{}):
+	case reflect.TypeOf(NodeFuncReturnImage{}):
 		return protoManage.NodeFuncReturnType_Image, false
-	case reflect.TypeOf(typedef.NodeFuncReturnMedia{}):
+	case reflect.TypeOf(NodeFuncReturnMedia{}):
 		return protoManage.NodeFuncReturnType_Media, false
-	case reflect.TypeOf(typedef.NodeFuncReturnFile{}):
+	case reflect.TypeOf(NodeFuncReturnFile{}):
 		return protoManage.NodeFuncReturnType_File, false
-	case reflect.TypeOf(typedef.NodeFuncReturnCharts{}):
+	case reflect.TypeOf(NodeFuncReturnCharts{}):
 		return protoManage.NodeFuncReturnType_Charts, false
-	case reflect.TypeOf(typedef.NodeFuncReturnTable{}):
+	case reflect.TypeOf(NodeFuncReturnTable{}):
 		return protoManage.NodeFuncReturnType_Table, false
 	case reflect.TypeOf(errors.New("")).Elem():
 		return protoManage.NodeFuncReturnType_Error, false

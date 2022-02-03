@@ -26,7 +26,6 @@ import (
 	"github.com/liyiligang/base/component/Jrpc"
 	"github.com/liyiligang/base/component/Jtool"
 	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxui-go-client/typedef/constant"
 	"io"
 	"os"
 	"path/filepath"
@@ -167,7 +166,7 @@ func (client *Client) uploadNodeResource(nodeResource *protoManage.NodeResource,
 	if err != nil {
 		return err
 	}
-	err = Jtool.ReadIOWithSize(read, constant.ConstRpcClientMaxMsgSize/2, func(buf []byte) error{
+	err = Jtool.ReadIOWithSize(read, ConstRpcClientMaxMsgSize/2, func(buf []byte) error{
 		return upload.Send(&protoManage.ReqNodeResourceUpload{Data: buf})
 	})
 	if err != nil {

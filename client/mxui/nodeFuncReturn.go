@@ -16,8 +16,6 @@
 
 package mxui
 
-import "github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
-
 type NodeFuncReturnText struct {
 	Data 			interface{}
 }
@@ -79,7 +77,7 @@ type NodeFuncReturnTableRow struct {
 
 type NodeFuncReturnTableVal struct {
 	Data			interface{}
-	State			protoManage.State
+	State			DataState
 }
 
 func (table *NodeFuncReturnTable) AddTableCol(col NodeFuncReturnTableCol) {

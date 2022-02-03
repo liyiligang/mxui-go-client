@@ -21,7 +21,6 @@ import (
 	"github.com/liyiligang/base/component/Jrpc"
 	"github.com/liyiligang/base/component/Jtool"
 	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxui-go-client/typedef/constant"
 )
 
 func (client *Client) RpcServeConnected(rpcKeepalive *Jrpc.RpcKeepalive, isReConnect bool) {
@@ -31,7 +30,7 @@ func (client *Client) RpcServeConnected(rpcKeepalive *Jrpc.RpcKeepalive, isReCon
 			client.RpcStreamError("rpc stream reconnect error", err)
 		}
 	}
-	err := client.updateNodeState(constant.NodeStateNormal)
+	err := client.updateNodeState(NodeStateNormal)
 	if err != nil {
 		client.RpcStreamError("update node state error", err)
 	}
@@ -41,14 +40,14 @@ func (client *Client) RpcServeDisconnected(rpcKeepalive *Jrpc.RpcKeepalive, isCl
 	if isCloseByUser {
 		client.closeConn()
 	}
-	err := client.updateNodeState(constant.NodeStateClose)
+	err := client.updateNodeState(NodeStateClose)
 	if err != nil {
 		client.RpcStreamError("update node state error", err)
 	}
 }
 
 func (client *Client) RpcStreamConnect(stream *Jrpc.RpcStream) (interface{}, error) {
-	return constant.ConstManageNodeID, nil
+	return ConstManageNodeID, nil
 }
 
 func (client *Client) RpcStreamConnected(stream *Jrpc.RpcStream) error {
@@ -86,7 +85,7 @@ func (client *Client) RpcStreamError(text string, err error) {
 		msg += err.Error()
 	}
 	if client.config.NotifyCall != nil {
-		client.config.NotifyCall(protoManage.NodeNotify{
+		client.config.NotifyCall(NodeNotify{
 			SenderType:           protoManage.NotifySenderType_NotifySenderTypeNode,
 			Message:              msg,
 			State:                protoManage.State_StateError,

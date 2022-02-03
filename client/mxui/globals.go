@@ -34,7 +34,7 @@ type ClientConfig struct {
 	ConnectTimeOut time.Duration
 	RequestTimeOut time.Duration
 	KeepaliveTime  time.Duration
-	NotifyCall	   func(nodeNotify protoManage.NodeNotify)
+	NotifyCall	   func(nodeNotify NodeNotify)
 }
 
 type Client struct {

@@ -25,8 +25,6 @@ import (
 	"github.com/go-echarts/go-echarts/v2/opts"
 	"github.com/liyiligang/base/component/Jtool"
 	"github.com/liyiligang/mxui-go-client/mxui"
-	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxui-go-client/typedef/constant"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -76,7 +74,7 @@ func baseExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "基础表单(Base form)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -101,7 +99,7 @@ func defaultValExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "默认值(Form with default)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -140,7 +138,7 @@ func uiExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "定制UI(Custom UI)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -177,7 +175,7 @@ func dateTimeExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "日期时间(Date time)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -207,7 +205,7 @@ func checkExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "表单校验(Form with check)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -237,7 +235,7 @@ func fileExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "文件上传(File upload)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -272,7 +270,7 @@ func containerExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "容器(Container)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -299,7 +297,7 @@ func assistExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "辅助选项(Assist options)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -318,7 +316,7 @@ func returnEmpty(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "无返回值(No return value)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -338,7 +336,7 @@ func returnTextExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "文本预览(Text preview)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -357,7 +355,7 @@ func returnObjectExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "对象预览(Object preview)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -375,7 +373,7 @@ func returnLinkExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "链接(Link)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -393,7 +391,7 @@ func returnImageExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "图片预览(Image view)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -412,7 +410,7 @@ func returnMediaExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "媒体播放(Media play)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -441,7 +439,7 @@ func returnFileExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "文件下载(File download)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -495,7 +493,7 @@ func returnTableExample(client *mxui.Client){
 				table.AddTableRow(mxui.NodeFuncReturnTableRow{
 					Value: []interface{}{mxui.NodeFuncReturnTableVal{
 						Data:  v.Name,
-						State: protoManage.State(rand.Intn(5)),
+						State: mxui.DataState(rand.Intn(5)),
 					}, v.Age, v.Birthday},
 					MergeSameRow: form.MergeRow,
 				})
@@ -511,7 +509,7 @@ func returnTableExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "表格预览(Table view)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -587,7 +585,7 @@ func returnChartExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "图表预览(Chart view)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -625,7 +623,7 @@ func returnMultiTypeExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "动态类型(Dynamic type)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -651,7 +649,7 @@ func returnErrorExample(client *mxui.Client){
 	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name: "错误类型(error type)",
 		CallFunc: callFunc,
-		Level:    constant.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)

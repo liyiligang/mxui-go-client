@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package constant
+package mxui
 
 import "github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
 
@@ -37,12 +37,18 @@ const (
 	UserLevelLevelSuperManager 	UserLevel =   4
 )
 
-type NodeReportValLevel int32
+type DataState int32
 const (
-	NodeReportValUnknown     NodeReportValLevel =   1
-	NodeReportValLevelNormal NodeReportValLevel =   2
-	NodeReportValLevelWarn   NodeReportValLevel =   3
-	NodeReportValLevelError  NodeReportValLevel =   4
+	DataStateInfo     	 DataState =  DataState(protoManage.State_StateUnknow)
+	DataStateSuccess	 DataState =  DataState(protoManage.State_StateNormal)
+	DataStateWarn   	 DataState =  DataState(protoManage.State_StateWarn)
+	DataStateError  	 DataState =  DataState(protoManage.State_StateError)
+)
+
+type NodeReportType int32
+const (
+	NodeReportTypeTable    NodeReportType =  NodeReportType(protoManage.NodeReportType_NodeReportTypeTable)
+	NodeReportTypeLine 	   NodeReportType =  NodeReportType(protoManage.NodeReportType_NodeReportTypeLine)
 )
 
 type NodeNotifyLevel int32

@@ -19,11 +19,10 @@ package example
 import (
 	"fmt"
 	"github.com/liyiligang/mxui-go-client/mxui"
-	"github.com/liyiligang/mxui-go-client/typedef/constant"
 )
 
 func LoadExampleNotify(client *mxui.Client) {
-	err := client.SendNodeNotify("节点已上线(node is online)", constant.NodeNotifyLevelSuccess, true)
+	err := client.SendNodeNotify("节点已上线(node is online)", mxui.NodeNotifyLevelSuccess, true)
 	if err != nil {
 		fmt.Println(err)
 	}

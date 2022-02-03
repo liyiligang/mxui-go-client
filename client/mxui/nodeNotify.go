@@ -18,10 +18,11 @@ package mxui
 
 import (
 	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxui-go-client/typedef/constant"
 )
 
-func (client *Client) SendNodeNotify(msg string, nodeNotifyLevel constant.NodeNotifyLevel, show bool) error {
+type NodeNotify protoManage.NodeNotify
+
+func (client *Client) SendNodeNotify(msg string, nodeNotifyLevel NodeNotifyLevel, show bool) error {
 	node, err := client.getNode()
 	if err != nil {
 		return err
@@ -38,7 +39,7 @@ func (client *Client) reqNodeNotify(message []byte) error {
 		return err
 	}
 	if client.config.NotifyCall != nil {
-		client.config.NotifyCall(req)
+		client.config.NotifyCall(NodeNotify(req))
 	}
 	return nil
 }

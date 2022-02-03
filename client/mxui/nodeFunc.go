@@ -21,14 +21,13 @@ import (
 	"errors"
 	"github.com/liyiligang/base/component/Jtool"
 	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxui-go-client/typedef/constant"
 	"reflect"
 )
 
 type NodeFuncRegister struct {
 	Name 			string
 	CallFunc 		interface{}
-	Level 			constant.UserLevel
+	Level 			UserLevel
 	ReturnType      protoManage.NodeFuncReturnType
 	BaseType		bool
 	ErrorPos		int

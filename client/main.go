@@ -20,22 +20,16 @@ import (
 	"fmt"
 	"github.com/liyiligang/mxui-go-client/example"
 	"github.com/liyiligang/mxui-go-client/mxui"
-	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
 	"time"
 )
 
-var manageClient *mxui.Client
-
 func main() {
-	var err error
-	manageClient, err = initClient()
+	client, err := initClient()
 	if err != nil {
 		fmt.Println("server connect error: ", err)
 		return
 	}
-	example.LoadExampleMethod(manageClient)
-	example.LoadExampleReport(manageClient)
-	example.LoadExampleNotify(manageClient)
+	LoadExample(client)
 	select {}
 }
 
@@ -48,7 +42,9 @@ func initClient() (*mxui.Client, error) {
 		ConnectTimeOut: time.Second * 5,
 		RequestTimeOut: time.Second * 5,
 		KeepaliveTime: time.Second * 1,
-		NotifyCall: notifyCall,
+		NotifyCall: func (nodeNotify mxui.NodeNotify){
+			fmt.Println("receive node notify: ", nodeNotify.Message)
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -56,6 +52,8 @@ func initClient() (*mxui.Client, error) {
 	return c, nil
 }
 
-func notifyCall(nodeNotify protoManage.NodeNotify) {
-	fmt.Println("receive node notify: ", nodeNotify.Message)
+func LoadExample(client *mxui.Client) {
+	example.LoadExampleMethod(client)
+	example.LoadExampleReport(client)
+	example.LoadExampleNotify(client)
 }

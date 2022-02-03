@@ -23,22 +23,21 @@ import (
 	"github.com/liyiligang/base/component/Jtool"
 	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
 	"github.com/liyiligang/mxui-go-client/schema"
-	"github.com/liyiligang/mxui-go-client/typedef/constant"
 	"reflect"
 	"time"
 )
 
 type NodeReportRegister struct {
 	Name 					string
-	Type					protoManage.NodeReportType
+	Type					NodeReportType
 	CallFunc 				interface{}
 	CallInterval 			time.Duration
-	Level 					constant.UserLevel
+	Level 					UserLevel
 }
 
 type NodeReportValue struct {
 	Data			interface{}
-	State			protoManage.State
+	State			DataState
 }
 
 type nodeReportSchema struct {
@@ -78,8 +77,8 @@ func (client *Client) RegisterNodeReport(nodeReport NodeReportRegister) error {
 
 	callName := Jtool.GetFuncName(nodeReport.CallFunc)
 	protoNodeReport := protoManage.NodeReport{NodeID: node.Base.ID, Name: nodeReport.Name,
-		Func: callName, Schema: nodeReportSchema, Type: nodeReport.Type, Level:protoManage.Level(nodeReport.Level),
-		Interval:nodeReport.CallInterval.Milliseconds()}
+		Func: callName, Schema: nodeReportSchema, Type: protoManage.NodeReportType(nodeReport.Type),
+		Level:protoManage.Level(nodeReport.Level), Interval:nodeReport.CallInterval.Milliseconds()}
 	ctx, _ := context.WithTimeout(context.Background(), client.config.RequestTimeOut)
 	resNodeReport, err := client.engine.RegisterNodeReport(ctx, &protoNodeReport)
 	if err != nil {

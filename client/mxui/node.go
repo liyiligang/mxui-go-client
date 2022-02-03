@@ -19,7 +19,6 @@ package mxui
 import (
 	"errors"
 	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxui-go-client/typedef/constant"
 )
 
 func (client *Client) getNode() (*protoManage.Node, error) {
@@ -38,7 +37,7 @@ func (client *Client) setNode(node protoManage.Node){
 	client.data.node.Store(node)
 }
 
-func (client *Client) updateNodeState(nodeState constant.NodeState) error {
+func (client *Client) updateNodeState(nodeState NodeState) error {
 	node, err := client.getNode()
 	if err != nil {
 		return err

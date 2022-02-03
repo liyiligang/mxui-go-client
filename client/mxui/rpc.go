@@ -21,7 +21,6 @@ import (
 	"github.com/liyiligang/base/component/Jrpc"
 	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
 	"github.com/liyiligang/mxui-go-client/schema"
-	"github.com/liyiligang/mxui-go-client/typedef/constant"
 	"google.golang.org/grpc"
 )
 
@@ -36,7 +35,7 @@ func InitManageClient(config ClientConfig) (*Client, error) {
 		CertName:       config.CertName,
 		ConnectTimeOut: config.ConnectTimeOut,
 		ClientOption:  []grpc.DialOption{grpc.WithBlock(), grpc.WithDefaultCallOptions(
-			grpc.MaxCallSendMsgSize(constant.ConstRpcClientMaxMsgSize), grpc.MaxCallRecvMsgSize(constant.ConstRpcClientMaxMsgSize)),
+			grpc.MaxCallSendMsgSize(ConstRpcClientMaxMsgSize), grpc.MaxCallRecvMsgSize(ConstRpcClientMaxMsgSize)),
 			grpc.WithUnaryInterceptor(client.rpcUnaryInterceptor), grpc.WithStreamInterceptor(client.rpcStreamInterceptor),
 		},
 	})

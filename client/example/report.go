@@ -19,8 +19,6 @@ package example
 import (
 	"fmt"
 	"github.com/liyiligang/mxui-go-client/mxui"
-	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
-	"github.com/liyiligang/mxui-go-client/typedef/constant"
 	"math/rand"
 	"time"
 )
@@ -38,22 +36,22 @@ func tableExample(client *mxui.Client){
 	}
 	callFunc := func() (*tableReport, error) {
 		cs :=  rand.Intn(15) - 5
-		state := protoManage.State_StateNormal
+		state := mxui.DataStateSuccess
 		if cs < 0 {
-			state = protoManage.State_StateUnknow
+			state = mxui.DataStateInfo
 		}
 		if cs > 5 {
-			state = protoManage.State_StateWarn
+			state = mxui.DataStateWarn
 		}
 		return &tableReport{Changsha: mxui.NodeReportValue{Data: cs, State: state},
 			NewYork: rand.Intn(10)+10, Paris: rand.Intn(10)+20}, nil
 	}
 	err := client.RegisterNodeReport(mxui.NodeReportRegister{
 		Name: "气温-表格(temperature-table)",
-		Type: protoManage.NodeReportType_NodeReportTypeTable,
+		Type: mxui.NodeReportTypeTable,
 		CallFunc: callFunc,
 		CallInterval:time.Second*2,
-		Level: constant.UserLevelLevelManager,
+		Level: mxui.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -69,12 +67,12 @@ func lineChartExample(client *mxui.Client){
 
 	callFunc := func() (*lineReport, error) {
 		cs :=  rand.Intn(15) - 5
-		state := protoManage.State_StateNormal
+		state := mxui.DataStateSuccess
 		if cs < 0 {
-			state = protoManage.State_StateUnknow
+			state = mxui.DataStateInfo
 		}
 		if cs > 5 {
-			state = protoManage.State_StateWarn
+			state = mxui.DataStateWarn
 		}
 		return &lineReport{Changsha: mxui.NodeReportValue{Data: cs, State: state},
 			NewYork: rand.Intn(10)+10, Paris: rand.Intn(10)+20}, nil
@@ -82,10 +80,10 @@ func lineChartExample(client *mxui.Client){
 
 	err := client.RegisterNodeReport(mxui.NodeReportRegister{
 		Name: "气温-折线(temperature-line)",
-		Type: protoManage.NodeReportType_NodeReportTypeLine,
+		Type: mxui.NodeReportTypeLine,
 		CallFunc: callFunc,
 		CallInterval:time.Second*2,
-		Level: constant.UserLevelLevelManager,
+		Level: mxui.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)

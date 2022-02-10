@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package Example
+package example
 
 import (
 	"bytes"
@@ -31,7 +31,7 @@ import (
 	"time"
 )
 
-func LoadExampleMethod(client *MXUI.Client){
+func LoadExampleMethod(client *mxui.Client){
 	//parameter
 	baseExample(client)
 	defaultValExample(client)
@@ -56,7 +56,7 @@ func LoadExampleMethod(client *MXUI.Client){
 	returnMultiTypeExample(client)
 }
 
-func baseExample(client *MXUI.Client){
+func baseExample(client *mxui.Client){
 	type baseForm struct {
 		Name      	string    		`schema:"title=姓名(name)"`
 		Age       	int       		`schema:"title=年龄(age)"`
@@ -71,17 +71,17 @@ func baseExample(client *MXUI.Client){
 		return form
 	}
 
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "基础表单(Base form)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func defaultValExample(client *MXUI.Client){
+func defaultValExample(client *mxui.Client){
 	type defaultValForm struct {
 		Name      	string    		`schema:"title=姓名(name),default=Jin yun"`
 		Age       	int       		`schema:"title=年龄(age),default=20"`
@@ -96,17 +96,17 @@ func defaultValExample(client *MXUI.Client){
 		return form
 	}
 
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "默认值(Form with default)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func uiExample(client *MXUI.Client){
+func uiExample(client *mxui.Client){
 
 	type boolCheck struct {
 		Golang		  	bool	   		`ui:"{'ui:widget':'el-checkbox','ui:options':{'label':'golang'}}"`
@@ -135,17 +135,17 @@ func uiExample(client *MXUI.Client){
 		return form
 	}
 
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "定制UI(Custom UI)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func dateTimeExample(client *MXUI.Client){
+func dateTimeExample(client *mxui.Client){
 	type dateTimeForm struct {
 		Time	  			string			`schema:"title=时间选择器(time picker),format=time"`
 		Date	  			string			`schema:"title=日期选择器(date picker),format=date"`
@@ -172,10 +172,10 @@ func dateTimeExample(client *MXUI.Client){
 		return form
 	}
 
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "日期时间(Date time)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -183,7 +183,7 @@ func dateTimeExample(client *MXUI.Client){
 }
 
 
-func checkExample(client *MXUI.Client){
+func checkExample(client *mxui.Client){
 	type checkForm struct {
 		Multiple       	int       	`schema:"title=指定数值倍数(specify value multiple),multipleOf=2"`
 		MaxMinVal       int       	`schema:"title=限制数值范围(limit value range)[10-100],minimum=10,maximum=100"`
@@ -202,17 +202,17 @@ func checkExample(client *MXUI.Client){
 		return form
 	}
 
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "表单校验(Form with check)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func fileExample(client *MXUI.Client){
+func fileExample(client *mxui.Client){
 	type fileForm struct {
 		File     	 string    		`schema:"title=文件上传(file upload)" ui:"{'ui:widget':'UploadFile','ui:btnText':'上传文件(upload file)'}"`
 		FileList     []string    	`schema:"title=文件批量上传(file batch upload)" ui:"{'ui:widget':'UploadFile','ui:btnText':'上传文件(upload file)'}"`
@@ -232,17 +232,17 @@ func fileExample(client *MXUI.Client){
 		//client.DownloadNodeResourceWithFile(form.File, "../file")
 		return form
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "文件上传(File upload)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func containerExample(client *MXUI.Client){
+func containerExample(client *mxui.Client){
 	type combineA struct {
 		String      string    		`schema:"title=字符串(string),default=123"`
 		Int      	int    			`schema:"title=整型(integer),default=123"`
@@ -267,17 +267,17 @@ func containerExample(client *MXUI.Client){
 	callFunc := func (form *containerForm) *containerForm {
 		return form
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "容器(Container)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func assistExample(client *MXUI.Client){
+func assistExample(client *mxui.Client){
 
 	type StructPtr struct {
 		FloatPtr      *float64    	`schema:"title=浮点指针(float pointer)"`
@@ -294,17 +294,17 @@ func assistExample(client *MXUI.Client){
 	callFunc := func (form *assistForm) *assistForm {
 		return form
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "辅助选项(Assist options)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func returnEmpty(client *MXUI.Client){
+func returnEmpty(client *mxui.Client){
 	type returnForm struct {
 		Name      	string    		`schema:"title=姓名(name)"`
 		Age       	int       		`schema:"title=年龄(age)"`
@@ -313,17 +313,17 @@ func returnEmpty(client *MXUI.Client){
 	callFunc := func (form *returnForm) {
 		fmt.Println(form)
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "无返回值(No return value)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func returnTextExample(client *MXUI.Client){
+func returnTextExample(client *mxui.Client){
 	type returnForm struct {
 		Name      	string    		`schema:"title=姓名(name)"`
 		Age       	int64       	`schema:"title=年龄(age)"`
@@ -333,17 +333,17 @@ func returnTextExample(client *MXUI.Client){
 		return "My name: " + form.Name + "\nMy age: "+ strconv.FormatInt(form.Age, 10) +
 			"\nMy birthday: " + form.Birthday
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "文本预览(Text preview)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func returnObjectExample(client *MXUI.Client){
+func returnObjectExample(client *mxui.Client){
 	type returnForm struct {
 		Name      	string    		`schema:"title=姓名(name)"`
 		Age       	int64       	`schema:"title=年龄(age)"`
@@ -352,76 +352,76 @@ func returnObjectExample(client *MXUI.Client){
 	callFunc := func (form *returnForm) *returnForm {
 		return form
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "对象预览(Object preview)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func returnLinkExample(client *MXUI.Client){
+func returnLinkExample(client *mxui.Client){
 	type returnForm struct {
 		LinkName      	string    		`schema:"title=链接名(link name),default=百度(baidu)"`
 		Link      		string    		`schema:"title=链接Url(link Url),default=https://www.baidu.com"`
 	}
-	callFunc := func (form *returnForm) MXUI.NodeFuncReturnLink {
-		return MXUI.NodeFuncReturnLink{Name: form.LinkName, Link: form.Link, Blank: true}
+	callFunc := func (form *returnForm) mxui.NodeFuncReturnLink {
+		return mxui.NodeFuncReturnLink{Name: form.LinkName, Link: form.Link, Blank: true}
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "链接(Link)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func returnImageExample(client *MXUI.Client){
+func returnImageExample(client *mxui.Client){
 	type returnForm struct {
 		Url      	string    	`schema:"title=图片Url(Image Url),default=https://webstatic.mihoyo.com/ys/event/e20210901-fab/images/poster1.bccfc913.jpg"`
 		ViewMode    string      `schema:"title=预览模式(View Mode),default=fill,enum=fill;contain;cover;none;scale-down,enumNames=填充(fill);包含(contain);覆盖(cover);无(none);缩放(scale-down)"`
 	}
-	callFunc := func (form *returnForm) *MXUI.NodeFuncReturnImage {
-		return &MXUI.NodeFuncReturnImage{URL: form.Url, Fit: form.ViewMode}
+	callFunc := func (form *returnForm) *mxui.NodeFuncReturnImage {
+		return &mxui.NodeFuncReturnImage{URL: form.Url, Fit: form.ViewMode}
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "图片预览(Image view)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func returnMediaExample(client *MXUI.Client){
+func returnMediaExample(client *mxui.Client){
 	type returnForm struct {
 		Url      	string    		`schema:"title=媒体Url(media Url),default=http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"`
 		IsLive		bool	   		`schema:"title=直播(is live)" ui:"{'ui:options':{'activeText':'是(yes)','inactiveText':'否(no)'}}"`
 		Loop		bool	   		`schema:"title=循环播放(loop playback)" ui:"{'ui:options':{'activeText':'是(yes)','inactiveText':'否(no)'}}"`
 	}
-	callFunc := func (form *returnForm) MXUI.NodeFuncReturnMedia {
-		return MXUI.NodeFuncReturnMedia{URL: form.Url, Live:form.IsLive, Loop: form.Loop}
+	callFunc := func (form *returnForm) mxui.NodeFuncReturnMedia {
+		return mxui.NodeFuncReturnMedia{URL: form.Url, Live:form.IsLive, Loop: form.Loop}
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "媒体播放(Media play)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func returnFileExample(client *MXUI.Client){
+func returnFileExample(client *mxui.Client){
 	type returnForm struct {
 		File     	 string    		`schema:"title=文件上传(file upload)" ui:"{'ui:widget':'UploadFile','ui:btnText':'上传文件(upload file)'}"`
 	}
-	callFunc := func (form *returnForm) *MXUI.NodeFuncReturnFile {
+	callFunc := func (form *returnForm) *mxui.NodeFuncReturnFile {
 		name, data, err := client.DownloadNodeResourceWithBytes(form.File)
 		if err != nil{
 			return nil
@@ -434,19 +434,19 @@ func returnFileExample(client *MXUI.Client){
 		if err != nil{
 			return nil
 		}
-		return &MXUI.NodeFuncReturnFile{ID: r.Base.ID, Name:r.Name}
+		return &mxui.NodeFuncReturnFile{ID: r.Base.ID, Name:r.Name}
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "文件下载(File download)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func returnTableExample(client *MXUI.Client){
+func returnTableExample(client *mxui.Client){
 	type Table struct {
 		Name      	string    		`schema:"title=姓名(name),default=Jin yun"`
 		Age       	int       		`schema:"title=年龄(age),default=20"`
@@ -463,42 +463,42 @@ func returnTableExample(client *MXUI.Client){
 		Align			string			`schema:"title=对齐方式(align),default=left,enum=left;center;right,enumNames=靠左(left);居中(center);靠右(right)"`
 		Table			[]Table			`schema:"title=添加用户信息(add user info)"`
 	}
-	callFunc := func (form *returnForm) *MXUI.NodeFuncReturnTable {
-		table := MXUI.NodeFuncReturnTable{
+	callFunc := func (form *returnForm) *mxui.NodeFuncReturnTable {
+		table := mxui.NodeFuncReturnTable{
 			Stripe: form.ShowStripe,
 			Border: form.ShowBorder,
 		}
 		if form.ShowIndex{
-			table.IndexCol = MXUI.NodeFuncReturnTableCol{Name: "ID", Width: 60, Align: form.Align}
+			table.IndexCol = mxui.NodeFuncReturnTableCol{Name: "ID", Width: 60, Align: form.Align}
 		}
-		table.AddTableCol(MXUI.NodeFuncReturnTableCol{
+		table.AddTableCol(mxui.NodeFuncReturnTableCol{
 			Name: "姓名(name)",
 			Width: 120,
 			Align: form.Align,
 			MergeSameCol: form.MergeCol,
 		})
-		table.AddTableCol(MXUI.NodeFuncReturnTableCol{
+		table.AddTableCol(mxui.NodeFuncReturnTableCol{
 			Name: "年龄(age)",
 			Width: 100,
 			Align: form.Align,
 			MergeSameCol: form.MergeCol,
 		})
-		table.AddTableCol(MXUI.NodeFuncReturnTableCol{
+		table.AddTableCol(mxui.NodeFuncReturnTableCol{
 			Name: "生日(birthday)",
 			Align: form.Align,
 			MergeSameCol: form.MergeCol,
 		})
 		for _, v := range form.Table {
 			if form.ShowColor{
-				table.AddTableRow(MXUI.NodeFuncReturnTableRow{
-					Value: []interface{}{MXUI.NodeFuncReturnTableVal{
+				table.AddTableRow(mxui.NodeFuncReturnTableRow{
+					Value: []interface{}{mxui.NodeFuncReturnTableVal{
 						Data:  v.Name,
-						State: MXUI.DataState(rand.Intn(5)),
+						State: mxui.DataState(rand.Intn(5)),
 					}, v.Age, v.Birthday},
 					MergeSameRow: form.MergeRow,
 				})
 			}else{
-				table.AddTableRow(MXUI.NodeFuncReturnTableRow{
+				table.AddTableRow(mxui.NodeFuncReturnTableRow{
 					Value: []interface{}{v.Name, v.Age, v.Birthday},
 					MergeSameRow: form.MergeRow,
 				})
@@ -506,17 +506,17 @@ func returnTableExample(client *MXUI.Client){
 		}
 		return &table
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "表格预览(Table view)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func returnChartExample(client *MXUI.Client){
+func returnChartExample(client *mxui.Client){
 	type Chart struct {
 		Name      	string    		`schema:"title=姓名(name),required"`
 		Age       	int       		`schema:"title=年龄(age),default=20"`
@@ -525,8 +525,8 @@ func returnChartExample(client *MXUI.Client){
 		ChartType   string      	`schema:"title=图表类型(Chart type),default=line,enum=line;bar;pie,enumNames=折线图(line chart);柱状图(bar chart);饼图(pie chart);"`
 		Chart		[]Chart			`schema:"title=添加用户信息(add user info)"`
 	}
-	returnVal := &MXUI.NodeFuncReturnCharts{}
-	callFunc := func (form *returnForm) *MXUI.NodeFuncReturnCharts {
+	returnVal := &mxui.NodeFuncReturnCharts{}
+	callFunc := func (form *returnForm) *mxui.NodeFuncReturnCharts {
 		switch form.ChartType {
 		case "line":
 			var xAxis []string
@@ -582,17 +582,17 @@ func returnChartExample(client *MXUI.Client){
 		}
 		return returnVal
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "图表预览(Chart view)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func returnMultiTypeExample(client *MXUI.Client){
+func returnMultiTypeExample(client *mxui.Client){
 	type returnForm struct {
 		ReturnType   string      	`schema:"title=返回类型(Return type),default=text,enum=text;object;file;null;error,enumNames=文本(text);对象(object);文件(file);空(null);错误(error)"`
 		Name      	string    		`schema:"title=姓名(name),default=Jin yun"`
@@ -612,7 +612,7 @@ func returnMultiTypeExample(client *MXUI.Client){
 			if err != nil{
 				return err
 			}
-			return &MXUI.NodeFuncReturnFile{ID: r.Base.ID, Name:r.Name}
+			return &mxui.NodeFuncReturnFile{ID: r.Base.ID, Name:r.Name}
 		case "null":
 			return nil
 		case "error":
@@ -620,17 +620,17 @@ func returnMultiTypeExample(client *MXUI.Client){
 		}
 		return nil
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "动态类型(Dynamic type)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func returnErrorExample(client *MXUI.Client){
+func returnErrorExample(client *mxui.Client){
 	type returnForm struct {
 		Name      	string    		`schema:"title=姓名(name),default=Jin yun"`
 		Age       	int64       	`schema:"title=年龄(age),default=20"`
@@ -646,10 +646,10 @@ func returnErrorExample(client *MXUI.Client){
 		return "My name: " + form.Name + "\nMy age: "+ strconv.FormatInt(form.Age, 10) +
 			"\nMy birthday: " + form.Birthday, nil
 	}
-	err := client.RegisterNodeFunc(MXUI.NodeFuncRegister{
+	err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
 		Name:     "错误类型(error type)",
 		CallFunc: callFunc,
-		Level:    MXUI.UserLevelLevelVisitor,
+		Level:    mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)

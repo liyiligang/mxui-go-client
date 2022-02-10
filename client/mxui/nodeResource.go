@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package MXUI
+package mxui
 
 import (
 	"bytes"

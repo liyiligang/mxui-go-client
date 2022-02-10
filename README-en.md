@@ -76,10 +76,10 @@ if err != nil {
 
 ## Generated UI
 ### Request parameters
-<img src="store\image\request_en.jpg" width="50%"/>
+<img src="store\image\request_en.jpg" width="60%"/>
 
 ### Return value
-<img src="store\image\response.jpg" width="50%"/>
+<img src="store\image\response.jpg" width="60%"/>
 
 
 ## Contact information

@@ -76,10 +76,10 @@ if err != nil {
 
 ## 生成的UI
 ### 请求参数
-<img src="store\image\request.jpg" width="50%"/>
+<img src="store\image\request.jpg" width="60%"/>
 
 ### 返回值
-<img src="store\image\response.jpg" width="50%"/>
+<img src="store\image\response.jpg" width="60%"/>
 
 
 ## 联系方式 

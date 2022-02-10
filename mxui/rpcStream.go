@@ -24,7 +24,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func (client *Client) initManageClientStream() error {
+func (client *Client) initMXUIClientStream() error {
 	rpcStream, err := Jrpc.GrpcStreamClientInit(new(protoManage.Message), Jrpc.RpcStreamCall{
 		RpcStreamConnect:client.RpcStreamConnect,
 		RpcStreamConnected:client.RpcStreamConnected,

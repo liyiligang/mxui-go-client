@@ -25,7 +25,7 @@ import (
 
 func (client *Client) RpcServeConnected(rpcKeepalive *Jrpc.RpcKeepalive, isReConnect bool) {
 	if isReConnect {
-		err := client.initManageClientStream()
+		err := client.initMXUIClientStream()
 		if err != nil {
 			client.RpcStreamError("rpc stream reconnect error", err)
 		}

@@ -24,7 +24,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func InitManageClient(config ClientConfig) (*Client, error) {
+func InitMXUIClient(config ClientConfig) (*Client, error) {
 	var err error
 	client := &Client{config: config}
 	client.conn, err = Jrpc.GrpcClientInit(Jrpc.RpcClientConfig{
@@ -49,7 +49,7 @@ func InitManageClient(config ClientConfig) (*Client, error) {
 	}
 	client.setNode(*protoNode)
 
-	err = client.initManageClientStream()
+	err = client.initMXUIClientStream()
 	if err != nil {
 		return nil, err
 	}

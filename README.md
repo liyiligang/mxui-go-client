@@ -28,14 +28,24 @@ go get -u github.com/liyiligang/mxui-go-client
 ```
 
 ## 运行
-```bash
+```go
 cd mxui/bin/
-
-# windows 
-mxui.exe
-
-# linux
-./mxui
+	c, err := mxui.InitManageClient(mxui.ClientConfig{
+		Addr:"x.x.x.:302",
+		PublicKeyPath:"./cert/grpc/ca_cert.pem",
+		CertName: "x.test.example.com",
+		NodeName: "例子(example)",
+		ConnectTimeOut: time.Second * 5,
+		RequestTimeOut: time.Second * 5,
+		KeepaliveTime: time.Second * 1,
+		NotifyCall: func (nodeNotify mxui.NodeNotify){
+			fmt.Println("receive node notify: ", nodeNotify.Message)
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 ```
 
 ## 进入MXUI

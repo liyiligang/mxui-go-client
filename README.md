@@ -13,11 +13,11 @@
 
 
 ## 简介
-mxui-go-client是 [MXUI](https://github.com/liyiligang/mxui) 的golang客户端
+mxui-go-client 是 [MXUI](https://github.com/liyiligang/mxui) 的golang客户端, 它能够通过 [MXUI](https://github.com/liyiligang/mxui) 平台快速的利用接口生成表单, 表格, 图表, 文件上传下载，音视频播放等UI组件
 
 ## 查看文档
 - [中文](https://mxui-doc.liyiligang.com)    
-- [English](https://mxui-doc.liyiligang.com)
+- [English](https://mxui-doc.liyiligang.com/en)
 
 ## 在线预览
 - [MXUI](https://mxui.liyiligang.com)    
@@ -46,17 +46,40 @@ if err != nil {
     panic(err)
 }
 
+//定义接口
+type resume struct {
+    Name      	string
+    Age       	int
+    Boy		  	bool
+    Occupation  string    `schema:"enum=teacher;sales;doctor"`
+}
 
+callFunc := func (form *resume) string {
+    sex := "boy"
+    if !form.Boy {
+        sex = "girl"
+    }
+    return "Hello World, My Name is " + form.Name+ ", " + 
+    strconv.Itoa(form.Age)+ " years old, "+ sex + ". I'm a " + 
+    form.Occupation + "."
+}
 
+//创建接口可视化UI
+err := client.RegisterNodeFunc(mxui.NodeFuncRegister{
+    Name:     "Hello World",
+    CallFunc: callFunc,
+})
+if err != nil {
+    fmt.Println(err)
+}
 ```
 
+## 生成的UI
+### 请求参数
+<img src="store\image\request.jpg" width="75%"/>
 
-
-
-## 进入MXUI
-###  浏览器访问: http://localhost:806 
-能够进入MXUI登录界面, 代表服务端已经部署成功   
-<img src="store\image\home.jpg" width="80%"/>
+### 返回值
+<img src="store\image\response.jpg" width="75%"/>
 
 
 ## 联系方式 

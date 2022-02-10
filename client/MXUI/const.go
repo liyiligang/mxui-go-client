@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mxui
+package MXUI
 
 import "github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
 

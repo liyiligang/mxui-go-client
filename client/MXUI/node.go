@@ -14,32 +14,35 @@
  * limitations under the License.
  */
 
-package mxui
+package MXUI
 
 import (
+	"errors"
 	"github.com/liyiligang/mxui-go-client/protoFiles/protoManage"
 )
 
-type NodeNotify protoManage.NodeNotify
+func (client *Client) getNode() (*protoManage.Node, error) {
+	val := client.data.node.Load()
+	if val == nil {
+		return nil, errors.New("node data is not found")
+	}
+	node, ok := val.(protoManage.Node)
+	if !ok {
+		return nil, errors.New("node assert fail with protoManage.Node")
+	}
+	return &node, nil
+}
 
-func (client *Client) SendNodeNotify(msg string, nodeNotifyLevel NodeNotifyLevel, show bool) error {
+func (client *Client) setNode(node protoManage.Node){
+	client.data.node.Store(node)
+}
+
+func (client *Client) updateNodeState(nodeState NodeState) error {
 	node, err := client.getNode()
 	if err != nil {
 		return err
 	}
-	nodeNotify := &protoManage.NodeNotify{SenderID: node.Base.ID, SenderType: protoManage.NotifySenderType_NotifySenderTypeNode,
-		Message: msg, State: protoManage.State(nodeNotifyLevel), ShowPop: show}
-	return client.sendPB(protoManage.Order_NodeNotifyAdd, nodeNotify)
-}
-
-func (client *Client) reqNodeNotify(message []byte) error {
-	req := protoManage.NodeNotify{}
-	err := req.Unmarshal(message)
-	if err != nil {
-		return err
-	}
-	if client.config.NotifyCall != nil {
-		client.config.NotifyCall(NodeNotify(req))
-	}
+	node.State = protoManage.State(nodeState)
+	client.setNode(*node)
 	return nil
 }

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package example
+package Example
 
 import (
 	"fmt"
 	"github.com/liyiligang/mxui-go-client/mxui"
 )
 
-func LoadExampleNotify(client *mxui.Client) {
-	err := client.SendNodeNotify("节点已上线(node is online)", mxui.NodeNotifyLevelSuccess, true)
+func LoadExampleNotify(client *MXUI.Client) {
+	err := client.SendNodeNotify("节点已上线(node is online)", MXUI.NodeNotifyLevelSuccess, true)
 	if err != nil {
 		fmt.Println(err)
 	}

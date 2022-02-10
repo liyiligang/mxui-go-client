@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mxui
+package MXUI
 
 type NodeFuncReturnText struct {
 	Data 			interface{}

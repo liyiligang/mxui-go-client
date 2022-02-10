@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package example
+package Example
 
 import (
 	"fmt"
@@ -23,67 +23,67 @@ import (
 	"time"
 )
 
-func LoadExampleReport(client *mxui.Client){
+func LoadExampleReport(client *MXUI.Client){
 	tableExample(client)
 	lineChartExample(client)
 }
 
-func tableExample(client *mxui.Client){
+func tableExample(client *MXUI.Client){
 	type tableReport struct {
-		Changsha mxui.NodeReportValue `schema:"title=长沙(Chang Sha)"`
+		Changsha MXUI.NodeReportValue `schema:"title=长沙(Chang Sha)"`
 		NewYork  int                  `schema:"title=纽约(New York)"`
 		Paris    int                  `schema:"title=巴黎(Paris)"`
 	}
 	callFunc := func() (*tableReport, error) {
 		cs :=  rand.Intn(15) - 5
-		state := mxui.DataStateSuccess
+		state := MXUI.DataStateSuccess
 		if cs < 0 {
-			state = mxui.DataStateInfo
+			state = MXUI.DataStateInfo
 		}
 		if cs > 5 {
-			state = mxui.DataStateWarn
+			state = MXUI.DataStateWarn
 		}
-		return &tableReport{Changsha: mxui.NodeReportValue{Data: cs, State: state},
+		return &tableReport{Changsha: MXUI.NodeReportValue{Data: cs, State: state},
 			NewYork: rand.Intn(10)+10, Paris: rand.Intn(10)+20}, nil
 	}
-	err := client.RegisterNodeReport(mxui.NodeReportRegister{
-		Name: "气温-表格(temperature-table)",
-		Type: mxui.NodeReportTypeTable,
-		CallFunc: callFunc,
-		CallInterval:time.Second*2,
-		Level: mxui.UserLevelLevelManager,
+	err := client.RegisterNodeReport(MXUI.NodeReportRegister{
+		Name:         "气温-表格(temperature-table)",
+		Type:         MXUI.NodeReportTypeTable,
+		CallFunc:     callFunc,
+		CallInterval: time.Second*2,
+		Level:        MXUI.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func lineChartExample(client *mxui.Client){
+func lineChartExample(client *MXUI.Client){
 	type lineReport struct {
-		Changsha mxui.NodeReportValue `schema:"title=长沙(Chang Sha)"`
+		Changsha MXUI.NodeReportValue `schema:"title=长沙(Chang Sha)"`
 		NewYork  int                  `schema:"title=纽约(New York)"`
 		Paris    int                  `schema:"title=巴黎(Paris)"`
 	}
 
 	callFunc := func() (*lineReport, error) {
 		cs :=  rand.Intn(15) - 5
-		state := mxui.DataStateSuccess
+		state := MXUI.DataStateSuccess
 		if cs < 0 {
-			state = mxui.DataStateInfo
+			state = MXUI.DataStateInfo
 		}
 		if cs > 5 {
-			state = mxui.DataStateWarn
+			state = MXUI.DataStateWarn
 		}
-		return &lineReport{Changsha: mxui.NodeReportValue{Data: cs, State: state},
+		return &lineReport{Changsha: MXUI.NodeReportValue{Data: cs, State: state},
 			NewYork: rand.Intn(10)+10, Paris: rand.Intn(10)+20}, nil
 	}
 
-	err := client.RegisterNodeReport(mxui.NodeReportRegister{
-		Name: "气温-折线(temperature-line)",
-		Type: mxui.NodeReportTypeLine,
-		CallFunc: callFunc,
-		CallInterval:time.Second*2,
-		Level: mxui.UserLevelLevelManager,
+	err := client.RegisterNodeReport(MXUI.NodeReportRegister{
+		Name:         "气温-折线(temperature-line)",
+		Type:         MXUI.NodeReportTypeLine,
+		CallFunc:     callFunc,
+		CallInterval: time.Second*2,
+		Level:        MXUI.UserLevelLevelManager,
 	})
 	if err != nil {
 		fmt.Println(err)

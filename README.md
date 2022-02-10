@@ -27,26 +27,31 @@ mxui-go-client是 [MXUI](https://github.com/liyiligang/mxui) 的golang客户端
 go get -u github.com/liyiligang/mxui-go-client
 ```
 
-## 运行
+## 基本用法
 ```go
-cd mxui/bin/
-	c, err := mxui.InitManageClient(mxui.ClientConfig{
-		Addr:"x.x.x.:302",
-		PublicKeyPath:"./cert/grpc/ca_cert.pem",
-		CertName: "x.test.example.com",
-		NodeName: "例子(example)",
-		ConnectTimeOut: time.Second * 5,
-		RequestTimeOut: time.Second * 5,
-		KeepaliveTime: time.Second * 1,
-		NotifyCall: func (nodeNotify mxui.NodeNotify){
-			fmt.Println("receive node notify: ", nodeNotify.Message)
-		},
-	})
-	if err != nil {
-		return nil, err
-	}
-	return c, nil
+//初始化
+client, err := mxui.InitMXUIClient(mxui.ClientConfig{
+    Addr:"x.x.x.x:302",
+    PublicKeyPath:"./cert/ca_cert.pem",
+    CertName: "x.test.example.com",
+    NodeName: "MyNode",
+    ConnectTimeOut: time.Second * 5,
+    RequestTimeOut: time.Second * 5,
+    KeepaliveTime: time.Second * 1,
+    NotifyCall: func (nodeNotify mxui.NodeNotify){
+        fmt.Println("receive node notify: ", nodeNotify.Message)
+    },
+})
+if err != nil {
+    panic(err)
+}
+
+
+
 ```
+
+
+
 
 ## 进入MXUI
 ###  浏览器访问: http://localhost:806 

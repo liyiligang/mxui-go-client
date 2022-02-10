@@ -66,6 +66,9 @@ func (client *Client) RegisterNodeReport(nodeReport NodeReportRegister) error {
 	if err != nil {
 		return err
 	}
+	if nodeReport.Level < UserLevelLevelVisitor || nodeReport.Level > UserLevelLevelSuperManager {
+		nodeReport.Level = UserLevelLevelVisitor
+	}
 	var nodeReportSchema string
 	rType:=reflect.TypeOf(nodeReport.CallFunc)
 	if rType.NumOut() > 0 {

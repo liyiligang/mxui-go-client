@@ -329,7 +329,7 @@ func returnTextExample(client *mxui.Client){
 		Age       	int64       	`schema:"title=年龄(age)"`
 		Birthday	string			`schema:"title=生日(birthday),format=date"`
 	}
-	callFunc := func (form *returnForm) interface{} {
+	callFunc := func (form *returnForm) string {
 		return "My name: " + form.Name + "\nMy age: "+ strconv.FormatInt(form.Age, 10) +
 			"\nMy birthday: " + form.Birthday
 	}

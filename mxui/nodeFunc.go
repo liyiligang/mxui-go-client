@@ -38,6 +38,9 @@ func (client *Client) RegisterNodeFunc(nodeFunc NodeFuncRegister) error {
 	if err != nil {
 		return err
 	}
+	if nodeFunc.Level < UserLevelLevelVisitor || nodeFunc.Level > UserLevelLevelSuperManager {
+		nodeFunc.Level = UserLevelLevelVisitor
+	}
 
 	var schema string
 	rType:=reflect.TypeOf(nodeFunc.CallFunc)

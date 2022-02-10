@@ -554,6 +554,9 @@ func (t *Type) genericKeywords(tags []string, parentType *Type, propertyName str
 			}
 		}
 	}
+	if t.Title == ""{
+		t.Title = propertyName
+	}
 }
 
 // read struct tags for string type keyworks

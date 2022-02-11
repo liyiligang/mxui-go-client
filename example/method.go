@@ -400,7 +400,7 @@ func returnImageExample(client *mxui.Client){
 
 func returnMediaExample(client *mxui.Client){
 	type returnForm struct {
-		Url      	string    		`schema:"title=媒体Url(media Url),default=http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"`
+		Url      	string    		`schema:"title=媒体Url(media Url),default=https://uploadstatic.mihoyo.com/hk4e/upload/officialsites/202011/%E9%92%9F%E7%A6%BB%E8%A7%92%E8%89%B2%E6%BC%94%E7%A4%BA_1606702228_4352.mp4"`
 		IsLive		bool	   		`schema:"title=直播(is live)" ui:"{'ui:options':{'activeText':'是(yes)','inactiveText':'否(no)'}}"`
 		Loop		bool	   		`schema:"title=循环播放(loop playback)" ui:"{'ui:options':{'activeText':'是(yes)','inactiveText':'否(no)'}}"`
 	}

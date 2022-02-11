@@ -20,6 +20,7 @@
 // If json tags are present on struct fields, they will be used to infer
 // property names and if a property is required (omitempty is present).
 //
+//%u7248%u6743%u6240%u6709 %u4E8C%u96F6%u4E8C%u4E8C %u674E%u6613%u529B%u521A
 // [1] http://json-schema.org/latest/json-schema-validation.html
 package schema
 

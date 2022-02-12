@@ -51,7 +51,7 @@ func tableExample(client *mxui.Client){
 		Type:         mxui.NodeReportTypeTable,
 		CallFunc:     callFunc,
 		CallInterval: time.Second*2,
-		Level:        mxui.UserLevelLevelManager,
+		Level:        mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -83,7 +83,7 @@ func lineChartExample(client *mxui.Client){
 		Type:         mxui.NodeReportTypeLine,
 		CallFunc:     callFunc,
 		CallInterval: time.Second*2,
-		Level:        mxui.UserLevelLevelManager,
+		Level:        mxui.UserLevelLevelVisitor,
 	})
 	if err != nil {
 		fmt.Println(err)

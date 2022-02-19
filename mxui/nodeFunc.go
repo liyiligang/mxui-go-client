@@ -28,9 +28,9 @@ type NodeFuncRegister struct {
 	Name 			string
 	CallFunc 		interface{}
 	Level 			UserLevel
-	ReturnType      protoManage.NodeFuncReturnType
-	BaseType		bool
-	ErrorPos		int
+	returnType      protoManage.NodeFuncReturnType
+	baseType		bool
+	errorPos		int
 }
 
 func (client *Client) RegisterNodeFunc(nodeFunc NodeFuncRegister) error {
@@ -52,9 +52,9 @@ func (client *Client) RegisterNodeFunc(nodeFunc NodeFuncRegister) error {
 	}
 
 	if rType.NumOut() > 0 {
-		nodeFunc.ReturnType, nodeFunc.BaseType = client.getNodeFuncReturnType(rType.Out(0))
+		nodeFunc.returnType, nodeFunc.baseType = client.getNodeFuncReturnType(rType.Out(0))
 	}
-	nodeFunc.ErrorPos  = client.getNodeFuncReturnErrorPos(rType)
+	nodeFunc.errorPos  = client.getNodeFuncReturnErrorPos(rType)
 
 	node, err := client.getNode()
 	if err != nil {

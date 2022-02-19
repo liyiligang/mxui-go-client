@@ -61,7 +61,7 @@ func baseExample(client *mxui.Client){
 		Name      	string    		`schema:"title=姓名(name)"`
 		Age       	int       		`schema:"title=年龄(age)"`
 		Weight      float64       	`schema:"title=体重(weight)[kg]"`
-		Sex		  	bool	   		`schema:"title=是否已婚(married)"`
+		Married		  	bool	   	`schema:"title=是否已婚(married)"`
 		Birthday	string			`schema:"title=生日(birthday),format=date"`
 		Occupation  string      	`schema:"title=职业(occupation),enum=teacher;sales;doctor,enumNames=教师(teacher);销售(sales);医生(doctor)"`
 		Interest  	[]string      	`schema:"title=爱好(interest),uniqueItems=true,enum=basketball;piano;sing,enumNames=篮球(basketball);钢琴(piano);唱歌(sing)"`
@@ -86,7 +86,7 @@ func defaultValExample(client *mxui.Client){
 		Name      	string    		`schema:"title=姓名(name),default=Jin yun"`
 		Age       	int       		`schema:"title=年龄(age),default=20"`
 		Weight      float64       	`schema:"title=体重(weight)[kg],default=62.5"`
-		Sex		  	bool	   		`schema:"title=是否已婚(married),default=false"`
+		Married		bool	   		`schema:"title=是否已婚(married),default=false"`
 		Birthday	string			`schema:"title=生日(birthday),format=date,default=2022-01-16"`
 		Occupation  string      	`schema:"title=职业(occupation),default=sales,enum=teacher;sales;doctor,enumNames=教师(teacher);销售(sales);医生(doctor)"`
 		Interest  	[]string      	`schema:"title=爱好(interest),default=piano;sing,uniqueItems=true,enum=basketball;piano;sing,enumNames=篮球(basketball);钢琴(piano);唱歌(sing)"`

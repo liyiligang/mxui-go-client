@@ -55,8 +55,8 @@ func (client *Client) nodeFuncCall(req *protoManage.ReqNodeFuncCall) error {
 	if err != nil {
 		return err
 	}
-	returnType := nodeFunc.ReturnType
-	baseType := nodeFunc.BaseType
+	returnType := nodeFunc.returnType
+	baseType := nodeFunc.baseType
 	if returnType == protoManage.NodeFuncReturnType_Unknown {
 		rType:=reflect.TypeOf(res)
 		returnType, baseType = client.getNodeFuncReturnType(rType)
@@ -105,8 +105,8 @@ func (client *Client) callFuncByReflect(nodeFunc *NodeFuncRegister, nodeFuncPara
 		res = funcCallRef.Call(make([]reflect.Value, 0))
 	}
 	if len(res) > 0 {
-		if nodeFunc.ErrorPos >= 0 {
-			errVal := res[nodeFunc.ErrorPos].Interface()
+		if nodeFunc.errorPos >= 0 {
+			errVal := res[nodeFunc.errorPos].Interface()
 			err, ok := errVal.(error)
 			if ok {
 				if err != nil {

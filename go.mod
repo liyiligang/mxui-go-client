@@ -7,6 +7,6 @@ require (
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.5.2
 	github.com/iancoleman/orderedmap v0.2.0
-	github.com/liyiligang/base v0.1.5
-	google.golang.org/grpc v1.38.0
+	github.com/liyiligang/base v0.1.8
+	google.golang.org/grpc v1.52.3
 )
